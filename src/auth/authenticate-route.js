@@ -8,16 +8,18 @@ angular
 .module('app')
 .factory('AuthenticateRouteResolve', function(Auth, $q, $state, $log, $timeout, RedirectToLogin) {
   return function AuthenticateRouteDeferCB() {
-    $log.debug("(AuthenticateRoute) state require auth");
+    $log.debug("(AuthenticateRouteResolve) Resolve auth");
     var defer = $q.defer();
 
     Auth.isLoggedInAsync(function(loggedIn) {
-      $log.debug("(AuthenticateRoute) user auth?", !!loggedIn);
-      defer.resolve();
+      $log.debug("(AuthenticateRouteResolve) user auth?", !!loggedIn);
       if (!loggedIn) {
+        defer.reject();
         $timeout(function() {
           RedirectToLogin();
         });
+      } else {
+        defer.resolve();
       }
     });
 

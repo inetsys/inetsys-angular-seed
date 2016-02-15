@@ -13,4 +13,4 @@ angular
     templateUrl: 'src/auth/login.tpl.html',
     controller: 'LoginCtrl'
   });
-})
+});

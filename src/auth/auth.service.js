@@ -6,27 +6,38 @@
 // emit $logout & $login event to rootScope
 angular
 .module('app')
-.provider("AuthConfig", function () {
-  // url that return user data
+.provider('authConfig', function () {
+  // url/method that return user data
+  this.api_users_data_method = 'POST';
   this.api_users_data = '/api/users/me';
-  // url that return the token
+
+  // url(POST) that return the token
   this.api_auth = '/api/auth';
+
   this.state_after_login = 'users';
+
+  // url/method to call to logout user
+  // null to disable request
+  this.api_users_logout_method = 'POST';
+  this.api_users_logout = '/api/logout';
+
   this.token_header = 'X-Access-Token';
   this.token_prefix = 'Bearer ';
   this.cookie_name = 'token';
-  // if this header is recieve with an error -> logout the user
+
+  // server side header to force session expired -> will logout user
   this.expiration_header = 'X-Session-Expired';
 
   this.$get = function () {
     return this;
   };
 })
-.factory('Auth', function Auth($location, $rootScope, $http, ipCookie, $state, chainLoading, $log, AuthConfig) {
+.factory('Auth', function Auth($location, $rootScope, $http, ipCookie, $state, $log, authConfig) {
   var currentUser = {};
+  var login_in_prog = null;
 
   function setCurrentUser(val) {
-    $log.debug("(Auth) setCurrentUser");
+    $log.debug('(Auth) setCurrentUser');
 
     $rootScope.user = val;
     currentUser = val;
@@ -34,8 +45,8 @@ angular
 
   function login_me() {
     return $http({
-      method: 'POST',
-      url: AuthConfig.api_users_data
+      method: authConfig.api_users_data_method,
+      url: authConfig.api_users_data
     })
     .then(function(response) {
       setCurrentUser(response.data);
@@ -44,10 +55,10 @@ angular
   }
 
   function get_token() {
-    return ipCookie(AuthConfig.cookie_name);
+    return ipCookie(authConfig.cookie_name);
   }
   function set_token(data) {
-    ipCookie(AuthConfig.cookie_name, data, {
+    ipCookie(authConfig.cookie_name, data, {
       path: '/'
     });
   }
@@ -57,10 +68,13 @@ angular
     });
   }
 
-  $log.debug("(Auth) Token", get_token());
+  $log.debug('(Auth) Token', get_token());
 
   if(get_token()) {
-    login_me();
+    login_in_prog = login_me()
+    .finally(function() {
+      login_in_prog = null;
+    });
   }
 
 
@@ -73,9 +87,9 @@ angular
      * @return {Promise}
      */
     login: function(username, password, remindme) {
-      var promise = $http({
-        method: "POST",
-        url: AuthConfig.api_auth,
+      return (login_in_prog = $http({
+        method: 'POST',
+        url: authConfig.api_auth,
         data: {
           username: username,
           password: password,
@@ -83,7 +97,7 @@ angular
         }
       })
       .then(function(response) {
-        $log.debug("(Auth) login success", response.data);
+        $log.debug('(Auth) login success', response.data);
 
         set_token(response.data.token);
 
@@ -91,15 +105,14 @@ angular
           return response;
         });
       }, function(response) {
-        $log.debug("(Auth) login err", response);
+        $log.debug('(Auth) login err', response);
         this.logout();
 
         return response;
-      }.bind(this));
-
-      chainLoading(promise);
-
-      return promise;
+      }.bind(this))
+      .finally(function() {
+        login_in_prog = null;
+      }));
     },
 
     /**
@@ -113,12 +126,12 @@ angular
       var token = get_token();
       remove_token();
 
-      if (token) {
+      if (token && authConfig.api_users_logout && authConfig.api_users_logout_method) {
         var headers = {};
-        headers[AuthConfig.token_header] = token;
-        chainLoading($http({
-          method: 'POST',
-          url: '/api/logout',
+        headers[authConfig.token_header] = token;
+        $http({
+          method: authConfig.api_users_logout_method,
+          url: authConfig.api_users_logout,
           headers: headers
         })
         .finally(function(response){
@@ -126,11 +139,11 @@ angular
           $rootScope.$emit('$logout');
 
           if (redirect_to) {
-            $log.debug('redirect logout', redirect_to);
+            $log.debug('(Auth) redirect logout', redirect_to);
 
             $state.go(redirect_to);
           }
-        }));
+        });
       }
     },
 
@@ -156,16 +169,17 @@ angular
      * Waits for currentUser to resolve before checking if user is logged in
      */
     isLoggedInAsync: function(cb) {
-      //$log.debug("(Auth) isLoggedInAsync", currentUser);
+      $log.debug('(Auth) isLoggedInAsync', currentUser, login_in_prog);
 
-      if(currentUser.hasOwnProperty('$promise')) {
-        currentUser.$promise.then(function() {
-          cb(true);
-        }).catch(function() {
-          cb(false);
-        });
-      } else if(currentUser.hasOwnProperty('id')) {
+      if (currentUser.hasOwnProperty('id')) {
         cb(true);
+      } else if(login_in_prog) {
+        login_in_prog
+          .then(function() {
+            cb(true);
+          }).catch(function() {
+            cb(false);
+          });
       } else {
         cb(false);
       }
@@ -207,20 +221,20 @@ angular
   return {
     // Add authorization token to headers
     request: function (config) {
-      var AuthConfig = $injector.get("AuthConfig");
-      var Auth = $injector.get("Auth");
+      var authConfig = $injector.get('authConfig');
+      var Auth = $injector.get('Auth');
       config.headers = config.headers || {};
       var t = Auth.getToken();
       if (t) {
-        config.headers[AuthConfig.token_header] = AuthConfig.token_prefix + t;
+        config.headers[authConfig.token_header] = authConfig.token_prefix + t;
       }
       return config;
     },
     responseError: function (response) {
-      var AuthConfig = $injector.get("AuthConfig");
-      var Auth = $injector.get("Auth");
+      var authConfig = $injector.get('authConfig');
+      var Auth = $injector.get('Auth');
 
-      if (response.headers(AuthConfig.expiration_header)){
+      if (response.headers(authConfig.expiration_header)){
         Auth.logout();
       }
 
@@ -232,4 +246,4 @@ angular
   $httpProvider.interceptors.push('authInterceptor');
 })
 // just run it so it can autologin
-.run(function(Auth) {})
+.run(function(Auth) {});

@@ -1,17 +1,17 @@
-// usage: ConfirmStateExit($scope, 'form.$dirty' [, tpl])
+// usage: confirmStateExit($scope, 'form.$dirty' [, tpl])
 angular
 .module('app')
-.provider('ConfirmStateExitConfig', function() {
+.provider('confirmStateExitConfig', function() {
   this.template = 'src/confirm-state-exit/dirty-modal.tpl.html';
 
   this.$get = function () {
     return this;
   };
 })
-.factory('ConfirmStateExit', function($rootScope, $uibModal, $state, ConfirmStateExitConfig) {
+.factory('confirmStateExit', function($rootScope, $uibModal, $state, confirmStateExitConfig) {
 
   return function confirm_state_exit($scope, cond_expr, tpl) {
-    tpl = tpl || ConfirmStateExitConfig.template;
+    tpl = tpl || confirmStateExitConfig.template;
 
     var obj = {
       is_dirty: function() {

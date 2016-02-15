@@ -3,7 +3,7 @@
 // $rootScope.modal_error, contains if there is a model active
 angular
 .module('app')
-.provider("ErrorConfig", function () {
+.provider("errorConfig", function () {
   // url that return user data
   this.default_template = 'src/error/error.tpl.html';
   this.templates = {};
@@ -13,7 +13,7 @@ angular
   };
 })
 // This http interceptor listens for authentication failures
-.factory('ErrorHandler', ['$injector', '$log', 'ErrorConfig', '$q', function ($injector, $log, ErrorConfig, $q) {
+.factory('errorHandler', ['$injector', '$log', 'errorConfig', '$q', function ($injector, $log, errorConfig, $q) {
   var error_list = [];
   var instance;
 
@@ -41,7 +41,11 @@ angular
     var err_data = error_list[0];
     for (i = 1; i < error_list.length; ++i) {
       if (!error_list[i].error.type) {
-        err_data.error.list = err_data.error.list.concat(error_list[i].error.list);
+        err_data.error.list = err_data.error.list
+          .concat(error_list[i].error.list)
+          .filter(function unique(value, index, self) {
+            return self.indexOf(value) === index;
+          });
         err_data.response.push(error_list[i].response[0]);
         err_data.deferred.push(error_list[i].deferred[0]);
         error_list.splice(i, 1);
@@ -58,7 +62,7 @@ angular
     if (instance) {
       squash_errors();
 
-      return instance.closed.then(function() {
+      return instance.result.then(function() {
         show_modal();
       });
     }
@@ -71,9 +75,9 @@ angular
 
     var err_data = error_list[0];
     var err = err_data.error;
-    var templateUrl = ErrorConfig.default_template;
+    var templateUrl = errorConfig.default_template;
     if (err.type) {
-      templateUrl = ErrorConfig.templates[err.type];
+      templateUrl = errorConfig.templates[err.type];
     }
 
 
@@ -133,7 +137,7 @@ angular
     }
   };
 }])
-.factory('ErrorFormat', function() {
+.factory('errorFormat', function() {
   return function(response) {
     var error = {
       list: [],
@@ -158,20 +162,20 @@ angular
     return error;
   };
 })
-.factory('ErrorInterceptor', ['$q', '$injector', '$interpolate', '$log', 'ErrorHandler', 'ErrorFormat', function ($q, $injector, $interpolate, $log, ErrorHandler, ErrorFormat) {
+.factory('errorInterceptor', ['$q', '$injector', '$interpolate', '$log', 'errorHandler', 'errorFormat', function ($q, $injector, $interpolate, $log, errorHandler, errorFormat) {
   return {
     responseError: function (response) {
-      $log.debug('responseError::ErrorInterceptor', response);
+      $log.debug('(errorInterceptor) responseError::', response);
 
       var expired_session = false;
 
       // manage 4XX & 5XX
       if (response.status >= 400) {
-        var errors = ErrorFormat(response);
+        var errors = errorFormat(response);
 
         // TODO handle retry
         // TODO modal should be promisable?
-        return ErrorHandler.push(errors, response);
+        return errorHandler.push(errors, response);
       }
 
       return $q.reject(response);
@@ -179,5 +183,5 @@ angular
   };
 }])
 .config(function ($httpProvider) {
-  $httpProvider.interceptors.push('ErrorInterceptor');
+  $httpProvider.interceptors.push('errorInterceptor');
 });

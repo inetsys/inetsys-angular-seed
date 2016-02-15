@@ -3,19 +3,19 @@
 angular
 .module("app")
 // Reescribe las url que empiezan por /api
-.provider('RewriteUrlsConfig', function () {
+.provider('rewriteUrlsConfig', function () {
   this.start_with = {};
   this.$get = function () {
     return this;
   };
 })
-.factory('RewriteInterceptor', function (RewriteUrlsConfig) {
+.factory('rewriteInterceptor', function (rewriteUrlsConfig) {
   return {
     request: function (config) {
       var i, url;
 
-      for (i in RewriteUrlsConfig.start_with) {
-        url = RewriteUrlsConfig.start_with[i];
+      for (i in rewriteUrlsConfig.start_with) {
+        url = rewriteUrlsConfig.start_with[i];
         if (config.url.indexOf(i) === 0) {
           config.url = url + config.url.substring(i.length);
         }
@@ -27,5 +27,5 @@ angular
   };
 })
 .config(function ($httpProvider) {
-  $httpProvider.interceptors.push('RewriteInterceptor');
+  $httpProvider.interceptors.push('rewriteInterceptor');
 });

@@ -32,21 +32,21 @@ angular
   var defer = null;
 
   $rootScope.$on("$stateChangeStart", function (event, toState, toParams, fromState, fromParams) {
-    $log.debug("$stateChangeStart", toState.name);
+    $log.debug("(Loading) $stateChangeStart", toState.name);
     if (!defer) {
       defer = chainLoadingQ();
     }
   });
 
   $rootScope.$on("$stateChangePrevented", function(event, toState, toParams, fromState, fromParams) {
-    $log.debug("$stateChangePrevented", toState.name);
+    $log.debug("(Loading) $stateChangePrevented", toState.name);
     if (defer) {
       defer.resolve();
       defer = null;
     }
   });
   $rootScope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams) {
-    $log.debug("$stateChangeSuccess", toState.name);
+    $log.debug("(Loading) $stateChangeSuccess", toState.name);
     if (defer) {
       defer.resolve();
       defer = null;
@@ -54,7 +54,7 @@ angular
   });
 
   $rootScope.$on("$stateChangeError", function (event, tostate, toparams) {
-    $log.error("$stateChangeError", arguments);
+    $log.error("(Loading) $stateChangeError", arguments);
     if (defer) {
       defer.resolve();
       defer = null;
@@ -62,14 +62,14 @@ angular
   });
 
   $rootScope.$on("$stateNotFound", function (event, unfoundState, fromState, fromParams) {
-    $log.error("$stateNotFound", arguments);
+    $log.error("(Loading) $stateNotFound", arguments);
     if (defer) {
       defer.resolve();
       defer = null;
     }
   });
 })
-.factory('HttpLoadingInterceptor', function ($q, $rootScope, $log, chainLoadingQ) {
+.factory('httpLoadingInterceptor', function ($q, $rootScope, $log, chainLoadingQ) {
   var requests = 0;
   var defer = null;
 
@@ -95,7 +95,7 @@ angular
       return response;
     },
     responseError: function (response) {
-      if (!(--requests)) {
+      if ((--requests) === 0) {
         // Hide loader
         $rootScope.$broadcast("$loaded");
         defer.resolve();
@@ -106,5 +106,5 @@ angular
   };
 })
 .config(function ($httpProvider) {
-  $httpProvider.interceptors.push('HttpLoadingInterceptor');
+  $httpProvider.interceptors.push('httpLoadingInterceptor');
 });

@@ -2,7 +2,7 @@
 // added permissions
 angular
 .module("app")
-.provider("NavbarLeft", function () {
+.provider("navbarLeft", function () {
   this.tree = [];
 
   this.$get = function () {

@@ -2,7 +2,7 @@
 
 angular
 .module('app')
-.controller('LoginCtrl', function ($scope, Auth, $state, $stateParams, AuthConfig, $log) {
+.controller('LoginCtrl', function ($scope, Auth, $state, $stateParams, authConfig, $log) {
   $scope.user = {};
   $scope.errors = {};
   $scope.submitted = false;
@@ -18,7 +18,7 @@ angular
 
       $state.go($stateParams.redirectTo, p);
     } else {
-      $state.go(AuthConfig.state_after_login);
+      $state.go(authConfig.state_after_login);
     }
   }
 

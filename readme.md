@@ -72,14 +72,10 @@ Except those that add routes. You overwrite those routes like:
 ```js
 angular
 .module('app')
-.config(function ($stateProvider) {
-  $stateProvider
-  .state('login', {
-    url: '/login?redirectTo&redirectToParams',
-    templateUrl: 'paty-to-my-login-view/login.tpl.html',
-    controller: 'LoginCtrl'
-  });
-})
+.run(['$state', function override_login($state) {
+   var state = $state.get('login');
+   state.templateUrl = 'paty-to-my-login-view/login.tpl.html';
+}]);
 ```
 
 ## Test / Showcase
