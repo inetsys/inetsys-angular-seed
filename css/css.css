@@ -1,0 +1,11 @@
+.ng-required label:after {
+    content: " *";
+    color: #a94442;
+}
+
+.st-sort-descent::before {
+    content: "▼";
+}
+.st-sort-ascent::before {
+    content: "▲";
+}

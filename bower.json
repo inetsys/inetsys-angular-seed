@@ -1,0 +1,24 @@
+{
+  "name": "inetsys-angular-seed",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "Luis Lafuente <luis.lafuente@inetsys.es>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/inetsys/inetsys-angular-seed",
+  "moduleType": [
+    "globals"
+  ],
+  "main": [
+    "css/css.css"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "server",
+    "tests"
+  ]
+}
