@@ -1,5 +1,8 @@
+'use strict';
+
 // based on https://github.com/blackat/ui-navbar
 // added permissions
+
 angular
 .module("app")
 .provider("navbarLeft", function () {
@@ -9,7 +12,7 @@ angular
     return this;
   };
   this.push = function (order, data) {
-    data.order = order;
+    data.index = order;
     this.tree.push(data);
   };
   this.sort = function() {
@@ -48,20 +51,20 @@ angular
     templateUrl: 'template/navbar-li.html',
     link: function (scope, element, attrs) {
       if (angular.isArray(scope.navbarLeaf.subtree)) {
-        element.append('<navbar-tree navbar-tree=\"navbarLeaf.subtree\"></navbar-tree>');
+        element.append('<navbar-sub-tree navbar-sub-tree=\"navbarLeaf.subtree\"></navbar-sub-tree>');
         var parent = element.parent();
         var classFound = false;
         while(parent.length > 0 && !classFound) {
-          if(parent.hasClass('navbar-right')) {
-          classFound = true;
+          if (parent.hasClass('navbar-right')) {
+            classFound = true;
           }
           parent = parent.parent();
         }
 
-        if(classFound) {
+        if (classFound) {
           element.addClass('dropdown-submenu-right');
         } else {
-         element.addClass('dropdown-submenu');
+          element.addClass('dropdown-submenu');
         }
 
         $compile(element.contents())(scope);
@@ -73,7 +76,9 @@ angular
   // TODO mouseover -> click if possible
   $templateCache.put("template/navbar-ul-tree.html",
   '<ul class="nav navbar-nav">\n'+
-  '  <li ui-sref-active="active" uib-dropdown="" is-open="tree.isopen" ng-repeat="tree in navbarTree" ng-init="tree.isopen = false">\n'+
+
+  '  <li ui-sref-active="active" uib-dropdown="" is-open="tree.isopen" ng-repeat="tree in navbarTree" ng-init="tree.isopen = false"\n'+
+  '  class="ng-hide" ng-show="$root.Auth.hasPermissions(tree.permissions) && $root.Auth.hasRoles(tree.roles)">\n'+
   '    <a uib-dropdown-toggle="" ng-mouseover="tree.isopen = true" ui-sref=\"{{tree.state}}\">\n'+
   '      <span translate>{{tree.name}}</span>\n'+
   '      <b class="caret" class="ng-hide" ng-show="tree.subtree"></b>\n'+
@@ -89,8 +94,8 @@ angular
   "</ul>");
 
   $templateCache.put("template/navbar-li.html",
-  "<li ng-class=\"{divider: navbarLeaf.name == 'divider'}\">\n" +
-  "  <a ui-sref=\"{{navbarLeaf.state}}\" ng-if=\"navbarLeaf.name !== 'divider'\">{{navbarLeaf.name}}</a>\n" +
+  "<li class=\"ng-hide\" ng-class=\"{divider: navbarLeaf.name == 'divider'}\" ng-show=\"$root.Auth.hasPermissions(navbarLeaf.permissions) && $root.Auth.hasRoles(navbarLeaf.roles)\">\n" +
+  "  <a class=\"ng-hide\" ui-sref=\"{{navbarLeaf.state}}\" ng-hide=\"navbarLeaf.name === 'divider'\">{{navbarLeaf.name}}</a>\n" +
   "</li>");
 
 }]);

@@ -43,7 +43,9 @@ angular
         $scope.user.remindme
       )
       .then(function() {
-        return redirect();
+        if (Auth.isLoggedIn()) {
+          return redirect();
+        }
       });
     }
   };

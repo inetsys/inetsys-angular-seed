@@ -9,8 +9,8 @@ angular
         var html = $scope.$eval($attrs.ngOpenModal);
         var modalInstance = $uibModal.open({
           templateUrl: html,
-          controller: ['$scope', function($modal_scope) {
-            $modal_scope.close = function(){
+          controller: ['$scope', function($scope_modal) {
+            $scope_modal.close = function(){
               modalInstance.close();
             };
           }]

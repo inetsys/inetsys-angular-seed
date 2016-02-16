@@ -23,14 +23,14 @@ angular
           windowClass: 'zindex-9999',
           backdrop: 'static',
           keyboard: false,
-          controller: ['$scope', function($modal_scope) {
+          controller: ['$scope', function($scope_modal) {
 
-            $modal_scope.ok = function () {
+            $scope_modal.ok = function () {
               ok && ok();
               modalInstance.close();
             };
 
-            $modal_scope.leave = function () {
+            $scope_modal.leave = function () {
               leave && leave();
               modalInstance.close();
             };

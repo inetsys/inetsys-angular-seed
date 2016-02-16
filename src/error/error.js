@@ -87,7 +87,7 @@ angular
       //scope: $rootScope,
       backdrop: 'static',
       keyboard: false,
-      controller: ['$scope', '$uibModalInstance', function ($scope, $ModalInstance) {
+      controller: ['$scope', '$uibModalInstance', function ($scope, $uibModalInstance) {
         $scope.templateUrl = templateUrl;
         $scope.error = err;
 
@@ -101,14 +101,14 @@ angular
           pop_error();
 
           instance = null;
-          $ModalInstance.close(null);
+          $uibModalInstance.close(null);
         };
 
         $scope.ok = function () {
           pop_error();
 
           instance = null;
-          $ModalInstance.close(null);
+          $uibModalInstance.close(null);
         };
       }]
     });

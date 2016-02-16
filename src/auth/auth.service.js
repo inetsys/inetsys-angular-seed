@@ -36,8 +36,8 @@ angular
   var currentUser = {};
   var login_in_prog = null;
 
-  function setCurrentUser(val) {
-    $log.debug('(Auth) setCurrentUser');
+  function set_current_user(val) {
+    $log.debug('(Auth) set_current_user');
 
     $rootScope.user = val;
     currentUser = val;
@@ -49,7 +49,7 @@ angular
       url: authConfig.api_users_data
     })
     .then(function(response) {
-      setCurrentUser(response.data);
+      set_current_user(response.data);
       $rootScope.$emit('$login');
     });
   }
@@ -65,6 +65,41 @@ angular
   function remove_token(data) {
     ipCookie.remove('token', {
       path: '/'
+    });
+  }
+
+  function has_role(roles, chk_fn) {
+    if (!roles) {
+      return true;
+    }
+
+    if (!currentUser || !currentUser.roles) {
+      return false;
+    }
+
+    if ('string' === typeof roles) {
+      roles = [roles];
+    }
+    return roles[chk_fn](function(role) {
+      return currentUser ? currentUser.roles.indexOf(role) !== -1 : false;
+    });
+  }
+
+  function has_permission(perms, chk_fn) {
+    if (!perms) {
+      return true;
+    }
+
+    if (!currentUser || !currentUser.permissions) {
+      return false;
+    }
+
+    if ('string' === typeof perms) {
+      perms = [perms];
+    }
+
+    return perms[chk_fn](function(perm) {
+      return currentUser ? currentUser.permissions.indexOf(perm) !== -1 : false;
     });
   }
 
@@ -122,7 +157,7 @@ angular
      * @param  {Boolean}
      */
     logout: function(redirect_to) {
-      setCurrentUser({});
+      set_current_user({});
       var token = get_token();
       remove_token();
 
@@ -184,33 +219,20 @@ angular
         cb(false);
       }
     },
-
     hasRoles: function(roles) {
-      if (!currentUser || !currentUser.roles) {
-        return false;
-      }
-
-      if ('string' === typeof roles) {
-        roles = [roles];
-      }
-      return roles.every(function(role) {
-        return currentUser ? currentUser.roles.indexOf(role) !== -1 : false;
-      });
+      return has_role(roles, 'every');
     },
-
+    // at least one
+    hasALORoles: function(roles) {
+      return has_role(roles, 'some');
+    },
     hasPermissions: function(perms) {
-      if (!currentUser || !currentUser.permissions) {
-        return false;
-      }
-
-      if ('string' === typeof perms) {
-        perms = [perms];
-      }
-      return perms.every(function(perm) {
-        return currentUser ? currentUser.permissions.indexOf(perm) !== -1 : false;
-      });
+      return has_permission(perms, 'every');
     },
-
+    // at least one
+    hasALOPermission: function(perms) {
+      return has_permission(perms, 'some');
+    },
     /**
      * Get auth token
      */
