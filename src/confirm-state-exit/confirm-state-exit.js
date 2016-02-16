@@ -1,4 +1,7 @@
+"use strict";
+
 // usage: confirmStateExit($scope, 'form.$dirty' [, tpl])
+
 angular
 .module('app')
 .provider('confirmStateExitConfig', function() {
@@ -10,7 +13,7 @@ angular
 })
 .factory('confirmStateExit', function($rootScope, $uibModal, $state, confirmStateExitConfig) {
 
-  return function confirm_state_exit($scope, cond_expr, tpl) {
+  return function confirm_state_exit($scope, cond_expr, tpl, cond_cb, open_cb) {
     tpl = tpl || confirmStateExitConfig.template;
 
     var obj = {
@@ -24,14 +27,15 @@ angular
           backdrop: 'static',
           keyboard: false,
           controller: ['$scope', function($scope_modal) {
+            open_cb && open_cb($scope_modal);
 
             $scope_modal.ok = function () {
-              ok && ok();
+              ok && ok(modalInstance);
               modalInstance.close();
             };
 
             $scope_modal.leave = function () {
-              leave && leave();
+              leave && leave(modalInstance);
               modalInstance.close();
             };
           }]
@@ -40,17 +44,20 @@ angular
     };
 
     // if dirty, show a warning
-    var cancel_dirty_leave,
-      leave_confirmed = false;
-
-    cancel_dirty_leave = $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+    var leave_confirmed = false;
+    var cancel_dirty_leave = $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
       var is_dirty = obj.is_dirty();
 
       if (is_dirty && !leave_confirmed) {
+        // prenvent&open if cond_cb() == true
+        if (cond_cb && !cond_cb(toState, toParams, fromState, fromParams)) {
+          return;
+        }
+
         event.preventDefault();
         $rootScope.$emit("$stateChangePrevented", event, toState, toParams, fromState, fromParams);
 
-        obj.open(null, function(modalInstance) {
+        obj.open(null, function() {
           leave_confirmed = true;
           $state.go(toState, toParams);
         });

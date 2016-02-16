@@ -31,6 +31,11 @@ module.exports = function(app) {
     }, 500);
   });
 
+  app.use('/api/empty/:status', function(req, res, next) {
+    var status = parseInt(req.params.status);
+    res.status(status).json({});
+  });
+
   app.use('/api/error-single/:status', function(req, res, next) {
     var status = parseInt(req.params.status);
     res.status(status).json({

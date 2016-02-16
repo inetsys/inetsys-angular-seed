@@ -41,8 +41,8 @@ angular
   $rootScope.tl_navbar = navbarLeft.tree;
 })
 
-.config(function (rewriteUrlsConfigProvider) {
-  //rewriteUrlsConfigProvider.start_with['/api'] = "/jwt/v1";
+.config(function (rewriteRequestConfigProvider) {
+  //rewriteRequestConfigProvider.start_with['/api'] = "/jwt/v1";
 })
 .config(function ($stateProvider, $injector) {
   //var AuthenticateRouteDefer = $injector.get("AuthenticateRouteDefer");
@@ -122,6 +122,14 @@ angular
 
   $scope.session_expired = function() {
     $http.get('/api/expire-my-session');
+  };
+
+  $scope.no_loading = function() {
+    $http({
+      method: 'GET',
+      url: '/api/empty/200',
+      noLoading: true
+    });
   };
 
 

@@ -75,6 +75,10 @@ angular
 
   return {
     request: function (config) {
+      if (config.noLoading) {
+        return config;
+      }
+
       requests++;
 
       if (requests == 1) {
@@ -86,6 +90,10 @@ angular
       return config;
     },
     response: function (response) {
+      if (response.config.noLoading) {
+        return response;
+      }
+
       if ((--requests) === 0) {
         // Hide loader
         $rootScope.$broadcast("$loaded");
@@ -95,6 +103,10 @@ angular
       return response;
     },
     responseError: function (response) {
+      if (response.config.noLoading) {
+        return $q.reject(response);
+      }
+
       if ((--requests) === 0) {
         // Hide loader
         $rootScope.$broadcast("$loaded");

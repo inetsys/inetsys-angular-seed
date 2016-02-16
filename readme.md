@@ -78,6 +78,36 @@ angular
 }]);
 ```
 
+## Usage
+
+### Loading bypass
+Do a request but do not show loading screen:
+
+```js
+$http({
+  method: 'XXXX',
+  url: 'YYYY',
+  noLoading: true
+})
+
+```
+
+### confirmStateExit
+
+```js
+confirmStateExit($scope, 'condition-evaled-in-the-scope', ['template-url',
+  [function(toState, toParams, fromState, fromParams) {
+    // this callback is to check if the state change require to display the modal
+    // Imagine the toState being a substate
+  },
+  [function($scope_modal) {
+    // to inject some staff the template may need
+  }]]])
+
+// example
+confirmStateExit($scope, 'form.dirty');
+```
+
 ## Test / Showcase
 
 ```
