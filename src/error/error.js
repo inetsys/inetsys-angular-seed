@@ -17,14 +17,14 @@ angular
   var error_list = [];
   var instance;
 
-  function pop_error(result_cb) {
+  function pop_error(reject) {
     var err_data = error_list[0];
     error_list.splice(0, 1);
 
     //deferred
     var i;
     for (i = 0; i < err_data.deferred.length; ++i) {
-      if (err_data.deferred[i]) {
+      if (err_data.deferred[i] && reject) {
         err_data.deferred[i].reject(err_data.response[i]);
       }
     }
@@ -94,18 +94,42 @@ angular
         // TODO
         // we should retry the request adding param to query
         $scope.retry = function (param) {
-          //pop_error($q.reject);
+          // why not clone?
+          // we may need to add more than one param because there are
+          // two confirmations
+          //var config = angular.copy(err_data.response[0].config);
+          var config = err_data.response[0].config;
+
+          $log.debug("(errorHandler) retry", param, config);
+          if (config.url.indexOf("?") !== -1) {
+            config.url += "&" + param + "=true";
+          } else {
+            config.url += "?" + param + "=true";
+          }
+
+          pop_error(false);
+          instance = null;
+          $uibModalInstance.close(null);
+
+          $http(config)
+          .then(function(response) {
+            $log.debug("(errorHandler) success", response);
+            err_data.deferred[0].resolve(response);
+          }, function(response) {
+            $log.debug("(errorHandler) error", response);
+            err_data.deferred[0].reject(response);
+          });
         };
 
         $scope.close = function () {
-          pop_error();
+          pop_error(true);
 
           instance = null;
           $uibModalInstance.close(null);
         };
 
         $scope.ok = function () {
-          pop_error();
+          pop_error(true);
 
           instance = null;
           $uibModalInstance.close(null);

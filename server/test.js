@@ -1,3 +1,4 @@
+"use strict";
 
 module.exports = function(app) {
   app.post('/api/users/me', function(req, res, next) {
@@ -54,14 +55,27 @@ module.exports = function(app) {
     });
   });
 
+  var force_times = 0;
   app.use('/api/error-template/:status', function(req, res, next) {
+    var t = req.query.force;
+    console.log("t", t);
+    // TODO fix: Array.isArray(t)
+    if (t == "true" || Array.isArray(t)) {
+      ++force_times;
+
+      if (force_times == 2) {
+        force_times = 0;
+        return res.status(204).json({});
+      }
+    }
     var status = parseInt(req.params.status);
     res.status(status).json({
       type: "retryable",
       error: [
         "This is a error list",
         "here you have more text",
-        "and more!!!"
+        "and more!!!",
+        "force times: " + force_times
       ]
     });
   });

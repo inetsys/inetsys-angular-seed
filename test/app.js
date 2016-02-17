@@ -113,7 +113,13 @@ angular
   };
 
   $scope.tpl_error = function() {
-    $http.get('/api/error-template/500');
+    $http.get('/api/error-template/500')
+    .success(function() {
+      console.log("tpl_error success");
+    })
+    .error(function(){
+      console.log("tpl_error error");
+    });
   };
 
   $scope.required_login = function() {
