@@ -6,7 +6,6 @@ to be called: **app**
 
 This is the minimum initialization needed:
 
-
 ```js
 angular
 .module('app', [
@@ -16,6 +15,14 @@ angular
   'cgBusy'
 ])
 ```
+
+tested with:
+* JQuery 2.1.4
+* angular 1.5.0
+* angular-bootstrap 1.1.2
+* angular-ui-router 0.2.18
+* angular-cookie 4.0.10
+* angular-busy 4.1.3
 
 ## Components
 

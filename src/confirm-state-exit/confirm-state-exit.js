@@ -11,16 +11,33 @@ angular
     return this;
   };
 })
-.factory('confirmStateExit', function($rootScope, $uibModal, $state, confirmStateExitConfig) {
+.factory('confirmStateExit', function($rootScope, $uibModal, $state, confirmStateExitConfig, $log) {
 
-  return function confirm_state_exit($scope, cond_expr, tpl, cond_cb, open_cb) {
+  return function confirm_state_exit($scope, cond_expr, tpl, open_cb) {
     tpl = tpl || confirmStateExitConfig.template;
 
-    var obj = {
-      is_dirty: function() {
+    var opened = false;
+
+    var cse = {
+      confirmed: false,
+      is_dirty: function(event, toState, toParams, fromState, fromParams) {
+        if ("function" === typeof cond_expr) {
+          $log.debug("(confirmStateExit) cond_expr()");
+          return cond_expr(cse, event, toState, toParams, fromState, fromParams);
+        }
+
         return $scope.$eval(cond_expr);
       },
+      prevent: function prevent(event, toState, toParams, fromState, fromParams) {
+        event.preventDefault();
+        $rootScope.$emit("$stateChangePrevented", event, toState, toParams, fromState, fromParams);
+      },
+      go: function(toState, toParams) {
+        cse.confirmed = true;
+        $state.go(toState, toParams);
+      },
       open: function(ok, leave) {
+        opened = true;
         var modalInstance = $uibModal.open({
           templateUrl: tpl,
           windowClass: 'zindex-9999',
@@ -30,11 +47,13 @@ angular
             open_cb && open_cb($scope_modal);
 
             $scope_modal.ok = function () {
+              opened = false;
               ok && ok(modalInstance);
               modalInstance.close();
             };
 
             $scope_modal.leave = function () {
+              opened = false;
               leave && leave(modalInstance);
               modalInstance.close();
             };
@@ -44,23 +63,28 @@ angular
     };
 
     // if dirty, show a warning
-    var leave_confirmed = false;
     var cancel_dirty_leave = $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-      var is_dirty = obj.is_dirty();
+      // avoid double open when $locationProvider.when is in use
+      console.log("opened", opened);
+      if (opened) {
+        cse.prevent(event, toState, toParams, fromState, fromParams);
+         return;
+      }
 
-      if (is_dirty && !leave_confirmed) {
-        // prenvent&open if cond_cb() == true
-        if (cond_cb && !cond_cb(toState, toParams, fromState, fromParams)) {
-          return;
-        }
+      var is_dirty = cse.is_dirty(event, toState, toParams, fromState, fromParams);
 
-        event.preventDefault();
-        $rootScope.$emit("$stateChangePrevented", event, toState, toParams, fromState, fromParams);
+      console.log("cse.confirmed", cse.confirmed);
 
-        obj.open(null, function() {
-          leave_confirmed = true;
-          $state.go(toState, toParams);
+      if (is_dirty && !cse.confirmed) {
+        cse.prevent(event, toState, toParams, fromState, fromParams);
+        cse.open(null, function() {
+          cse.go(toState, toParams);
         });
+      }
+
+      // reset after leave, so we can show it again if necessary
+      if (cse.confirmed) {
+        cse.confirmed = false;
       }
     });
 
@@ -68,6 +92,6 @@ angular
       cancel_dirty_leave();
     });
 
-    return obj;
+    return cse;
   };
 });
