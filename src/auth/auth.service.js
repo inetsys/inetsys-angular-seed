@@ -85,6 +85,9 @@ angular
     });
   }
 
+  // permissions can be:
+  // * a list of strings
+  // * an object-boolean-terminated user: { create: true, delete: false }
   function has_permission(perms, chk_fn) {
     if (!perms) {
       return true;
@@ -99,7 +102,18 @@ angular
     }
 
     return perms[chk_fn](function(perm) {
-      return currentUser ? currentUser.permissions.indexOf(perm) !== -1 : false;
+      if (Array.isArray(currentUser.permissions)) {
+        return currentUser ? currentUser.permissions.indexOf(perm) !== -1 : false;
+      }
+      // currentUser.permissions is an object
+      var ref = currentUser.permissions;
+      return perm.split(".").every(function(k) {
+        if (ref[k]) {
+          ref = ref[k];
+          return true;
+        }
+        return false;
+      })
     });
   }
 
