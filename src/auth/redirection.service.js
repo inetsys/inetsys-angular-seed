@@ -1,3 +1,5 @@
+"use strict";
+
 //redirectTo
 //redirectToParams
 angular
@@ -13,7 +15,7 @@ angular
     return this;
   };
 })
-.factory("RedirectToLogin", function($state, Redirection) {
+.factory("redirectToLogin", function($state, Redirection) {
   return function(name, params) {
     if (!name) {
       name = Redirection.state.name;
@@ -26,9 +28,9 @@ angular
     });
   };
 })
-.run(function ($rootScope, $state, $log, Auth, Redirection, RedirectToLogin) {
-  $rootScope.$on("$stateChangeStart", function (event, toState, toParams, fromState, fromParams) {
-    if (toState.name != "login" && toState.name != "error") {
+.run(function ($rootScope, $state, $log, Auth, Redirection, redirectToLogin) {
+  $rootScope.$on("$stateChangeStart", function (event, toState, toParams/*, fromState, fromParams*/) {
+    if ("login" !== toState.name && "error" !== toState.name) {
       Redirection.state.name = toState.name;
       Redirection.state.params = toParams;
     }
@@ -42,11 +44,11 @@ angular
     if (Auth.isLoggedIn()) {
       $state.go("error");
     } else {
-      RedirectToLogin(toState.name, toParams);
+      redirectToLogin(toState.name, toParams);
     }
   });
 
-  $rootScope.$on("$stateNotFound", function (event, unfoundState, fromState, fromParams) {
+  $rootScope.$on("$stateNotFound", function (/*event, unfoundState, fromState, fromParams*/) {
     $log.error("$stateNotFound", arguments);
     $state.go("error");
   });

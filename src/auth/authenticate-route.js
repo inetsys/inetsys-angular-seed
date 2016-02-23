@@ -1,3 +1,4 @@
+"use strict";
 // on $stateChangeStart check if a parent has 'authenticate:true'
 // if it does, put AuthenticateRouteResolve in the resolve
 
@@ -6,22 +7,34 @@
 // for the future...
 angular
 .module('app')
-.factory('AuthenticateRouteResolve', function(Auth, $q, $state, $log, $timeout, RedirectToLogin) {
+.factory('AuthenticateRouteResolve', function(Auth, $q, $state, $log, $timeout, redirectToLogin, $rootScope) {
   return function AuthenticateRouteDeferCB() {
     $log.debug("(AuthenticateRouteResolve) Resolve auth");
     var defer = $q.defer();
 
-    Auth.isLoggedInAsync(function(loggedIn) {
-      $log.debug("(AuthenticateRouteResolve) user auth?", !!loggedIn);
-      if (!loggedIn) {
-        defer.reject();
-        $timeout(function() {
-          RedirectToLogin();
-        });
-      } else {
+    // allow authentication on offline applications
+    // if $rootScope.offline just passthrough
+    console.log($rootScope);
+    console.log("offline", $rootScope.offline);
+    if ($rootScope.offline) {
+      $log.debug("(AuthenticateRouteResolve) offline => passthrough");
+      $timeout(function() {
         defer.resolve();
-      }
-    });
+      });
+    } else {
+      Auth.isLoggedInAsync(function(loggedIn) {
+        $log.debug("(AuthenticateRouteResolve) user auth?", !!loggedIn);
+        if (!loggedIn) {
+          defer.reject();
+          $timeout(function() {
+            redirectToLogin();
+          });
+        } else {
+          defer.resolve();
+        }
+      });
+    }
+
 
     return defer.promise;
   };
