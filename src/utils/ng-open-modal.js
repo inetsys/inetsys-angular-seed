@@ -1,4 +1,7 @@
+"use strict";
+
 // usage: ng-open-modal="/views/xxx.tpl.html"
+
 angular
 .module('app')
 .directive('ngOpenModal', function ($uibModal) {

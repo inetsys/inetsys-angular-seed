@@ -15,7 +15,7 @@ angular
     $rootScope.$on('$stateChangeSuccess', function(evt, to, params) {
       if (to.redirectTo) {
         evt.preventDefault();
-        $state.go(to.redirectTo, params)
+        $state.go(to.redirectTo, params);
       }
     });
 }]);

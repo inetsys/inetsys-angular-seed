@@ -30,6 +30,10 @@ angular
     }
   }
 
+  function unique(value, index, self) {
+    return self.indexOf(value) === index;
+  }
+
   // check if the error can be squashed
   function squash_errors() {
     if (error_list[0].type) {
@@ -43,9 +47,7 @@ angular
       if (!error_list[i].error.type) {
         err_data.error.list = err_data.error.list
           .concat(error_list[i].error.list)
-          .filter(function unique(value, index, self) {
-            return self.indexOf(value) === index;
-          });
+          .filter(unique);
         err_data.response.push(error_list[i].response[0]);
         err_data.deferred.push(error_list[i].deferred[0]);
         error_list.splice(i, 1);
@@ -190,8 +192,6 @@ angular
   return {
     responseError: function (response) {
       $log.debug('(errorInterceptor) responseError::', response);
-
-      var expired_session = false;
 
       // manage 4XX & 5XX
       if (response.status >= 400) {

@@ -7,7 +7,7 @@ angular
 .module('app')
 .factory('chainLoading', function($rootScope) {
   return function chainLoading(promise) {
-    if (!$rootScope.loading || $rootScope.loading.$$state.status == 1) {
+    if (!$rootScope.loading || $rootScope.loading.$$state.status === 1) {
       $rootScope.loading = promise;
     } else {
       $rootScope.loading = $rootScope.loading.then(function() { return promise; });
@@ -19,7 +19,7 @@ angular
 .factory('chainLoadingQ', function($rootScope, $q) {
   return function chainLoading() {
     var defer = $q.defer();
-    if (!$rootScope.loading || $rootScope.loading.$$state.status == 1) {
+    if (!$rootScope.loading || $rootScope.loading.$$state.status === 1) {
       $rootScope.loading = defer.promise;
     } else {
       $rootScope.loading = $rootScope.loading.then(function() { return defer.promise; });
@@ -31,21 +31,21 @@ angular
 .run(function ($rootScope, chainLoadingQ, $log) {
   var defer = null;
 
-  $rootScope.$on("$stateChangeStart", function (event, toState, toParams, fromState, fromParams) {
+  $rootScope.$on("$stateChangeStart", function (event, toState/*, toParams, fromState, fromParams*/) {
     $log.debug("(Loading) $stateChangeStart", toState.name);
     if (!defer) {
       defer = chainLoadingQ();
     }
   });
 
-  $rootScope.$on("$stateChangePrevented", function(event, toState, toParams, fromState, fromParams) {
+  $rootScope.$on("$stateChangePrevented", function(event, toState/*, toParams, fromState, fromParams*/) {
     $log.debug("(Loading) $stateChangePrevented", toState.name);
     if (defer) {
       defer.resolve();
       defer = null;
     }
   });
-  $rootScope.$on("$stateChangeSuccess", function(event, toState, toParams, fromState, fromParams) {
+  $rootScope.$on("$stateChangeSuccess", function(event, toState/*, toParams, fromState, fromParams*/) {
     $log.debug("(Loading) $stateChangeSuccess", toState.name);
     if (defer) {
       defer.resolve();
@@ -53,7 +53,7 @@ angular
     }
   });
 
-  $rootScope.$on("$stateChangeError", function (event, tostate, toparams) {
+  $rootScope.$on("$stateChangeError", function (/*event, tostate, toparams*/) {
     $log.error("(Loading) $stateChangeError", arguments);
     if (defer) {
       defer.resolve();
@@ -61,7 +61,7 @@ angular
     }
   });
 
-  $rootScope.$on("$stateNotFound", function (event, unfoundState, fromState, fromParams) {
+  $rootScope.$on("$stateNotFound", function (/*event, unfoundState, fromState, fromParams*/) {
     $log.error("(Loading) $stateNotFound", arguments);
     if (defer) {
       defer.resolve();
@@ -81,7 +81,7 @@ angular
 
       requests++;
 
-      if (requests == 1) {
+      if (requests === 1) {
         defer = chainLoadingQ();
       }
 

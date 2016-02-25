@@ -13,7 +13,7 @@ angular
         if (!$scope.$eval($attrs.ngClickIf)) {
           $log.debug("prevent!");
           $event.preventDefault();
-          $event.stopPropagation()
+          $event.stopPropagation();
         }
       });
     }

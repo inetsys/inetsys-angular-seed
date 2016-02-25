@@ -62,7 +62,7 @@ angular
       path: '/'
     });
   }
-  function remove_token(data) {
+  function remove_token() {
     ipCookie.remove('token', {
       path: '/'
     });
@@ -113,7 +113,7 @@ angular
           return true;
         }
         return false;
-      })
+      });
     });
   }
 
@@ -183,7 +183,7 @@ angular
           url: authConfig.api_users_logout,
           headers: headers
         })
-        .finally(function(response){
+        .finally(function() {
           // TODO review if this is the best site
           $rootScope.$emit('$logout');
 

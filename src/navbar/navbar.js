@@ -49,7 +49,7 @@ angular
       navbarLeaf: '='
     },
     templateUrl: 'template/navbar-li.html',
-    link: function (scope, element, attrs) {
+    link: function (scope, element/*, attrs*/) {
       if (angular.isArray(scope.navbarLeaf.subtree)) {
         element.append('<navbar-sub-tree navbar-sub-tree=\"navbarLeaf.subtree\"></navbar-sub-tree>');
         var parent = element.parent();

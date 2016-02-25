@@ -41,7 +41,7 @@ angular
 })
 // Add resolve function if needed to state on $stateChangeStart
 .factory('AuthenticateRoute', function(Auth, $state, $log, $q, AuthenticateRouteResolve) {
-  return function (event, toState, toParams, fromState, fromParams) {
+  return function (event, toState/*, toParams, fromState, fromParams*/) {
     var require_auth = false;
     var path = toState.name.split(".");
     var i = 0;
@@ -55,12 +55,14 @@ angular
       }
     }
 
+    $log.debug("(AuthenticateRoute)", path, "require_auth?", require_auth);
+
     if (require_auth) {
       if (undefined === toState.resolve) {
         $log.error("(AuthenticateRoute)", toState.name, "need a resolve: add resolve:{}");
         return;
       }
-      toState.resolve =toState.resolve || {};
+      toState.resolve = toState.resolve || {};
       toState.resolve.authenticate = AuthenticateRouteResolve;
     }
   };
