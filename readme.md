@@ -69,9 +69,12 @@ Optionals
 
 ```json
 [
-  "src/utils/raw-request.js"
+  "src/utils/raw-request.js",
+  "src/utils/ui-router-redirect.js"
 ]
 ```
+
+**NOTE**: navbar require https://github.com/inetsys/ng-formalizer/blob/master/lib/ng-compile.js
 
 To configure URLS each component has a provider.
 Except those that add routes. You overwrite those routes like:
