@@ -10,12 +10,18 @@
 
 angular
 .module('app')
-.run(['$rootScope', '$state', function($rootScope, $state) {
+.run(['$rootScope', '$state', '$injector', function($rootScope, $state, $injector) {
 
     $rootScope.$on('$stateChangeSuccess', function(evt, to, params) {
-      if (to.redirectTo) {
+      if ('string' === typeof to.redirectTo) {
         evt.preventDefault();
         $state.go(to.redirectTo, params);
+      }
+      if ('function' === typeof to.redirectTo || Array.isArray(to.redirectTo)) {
+        var state = $injector.invoke(to.redirectTo);
+        if (state) {
+          $state.go(state, params);
+        }
       }
     });
 }]);

@@ -118,6 +118,33 @@ confirmStateExit($scope, 'condition-evaled-in-the-scope', ['template-url',
 confirmStateExit($scope, 'form.dirty');
 ```
 
+# ui-router: redirectTo
+
+redirectTo support
+
+* string: destination state
+* Angular Injection Function Annotation
+
+
+Example of redirection based on permisions:
+
+```js
+$stateProvider
+.state("installation.view", {
+  '...': '...',
+  // TODO redirectTo must accept a function! to test permissions!
+  redirectTo: ["Auth", function(Auth) {
+    if (Auth.hasPermissions("xx")) {
+      return "xx";
+    }
+    if (Auth.hasPermissions("yy")) {
+      return "yy";
+    }
+    return "zz";
+  }]
+});
+```
+
 ## Test / Showcase
 
 ```
