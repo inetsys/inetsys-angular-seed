@@ -81,6 +81,11 @@ angular
       roles = [roles];
     }
     return roles[chk_fn](function(role) {
+      // drop nulls, empty strings
+      if (!role) {
+        return true;
+      }
+
       return currentUser ? currentUser.roles.indexOf(role) !== -1 : false;
     });
   }
@@ -102,6 +107,11 @@ angular
     }
 
     return perms[chk_fn](function(perm) {
+      // drop nulls, empty strings
+      if (!perm) {
+        return true;
+      }
+
       if (Array.isArray(currentUser.permissions)) {
         return currentUser ? currentUser.permissions.indexOf(perm) !== -1 : false;
       }
