@@ -46,25 +46,26 @@ angular
     var path = toState.name.split(".");
     var i = 0;
     var s;
+    var state;
 
     for (; i < path.length; ++i) {
-      s = $state.get(path.slice(0, i +1).join("."));
+      state = path.slice(0, i +1).join(".");
+      s = $state.get(state);
 
       if (s.authenticate) {
         require_auth = true;
       }
+      if (require_auth) {
+        if (undefined === toState.resolve) {
+          $log.error("(AuthenticateRoute)", state, "need a resolve: add resolve:{}");
+          return;
+        }
+        s.resolve = s.resolve || {};
+        s.resolve.authenticate = AuthenticateRouteResolve;
+      }
     }
 
     $log.debug("(AuthenticateRoute)", path, "require_auth?", require_auth);
-
-    if (require_auth) {
-      if (undefined === toState.resolve) {
-        $log.error("(AuthenticateRoute)", toState.name, "need a resolve: add resolve:{}");
-        return;
-      }
-      toState.resolve = toState.resolve || {};
-      toState.resolve.authenticate = AuthenticateRouteResolve;
-    }
   };
 })
 .run(function ($rootScope, AuthenticateRoute) {
