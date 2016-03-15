@@ -203,6 +203,10 @@ angular
             $state.go(redirect_to);
           }
         });
+      } else if (redirect_to) {
+        $log.debug('(Auth) redirect logout', redirect_to);
+
+        $state.go(redirect_to);
       }
     },
 
