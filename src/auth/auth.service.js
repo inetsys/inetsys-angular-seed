@@ -32,7 +32,7 @@ angular
     return this;
   };
 })
-.factory('Auth', function Auth($location, $rootScope, $http, ipCookie, $state, $log, authConfig) {
+.factory('Auth', function Auth($location, $rootScope, $http, $cookies, $state, $log, authConfig) {
   var currentUser = {};
   var login_in_prog = null;
 
@@ -55,17 +55,30 @@ angular
   }
 
   function get_token() {
-    return ipCookie(authConfig.cookie_name);
+    return $cookies.get(authConfig.cookie_name);
   }
+  // set token will set a cookie in current domain and parent domain
+  // for no good reason :S
   function set_token(data) {
-    ipCookie(authConfig.cookie_name, data, {
-      path: '/'
+    $cookies.put(authConfig.cookie_name, data, {
+      path: '/',
+      secure: $location.protocol() === "https"
     });
   }
+  // remove token will remove the cookie in current domain
+  // and all parent domains
   function remove_token() {
-    ipCookie.remove('token', {
-      path: '/'
-    });
+    var h = $location.host().split(".");
+    var len = h.length;
+    var i;
+
+    for(i = 2; i <= len; ++i) {
+      $cookies.remove(authConfig.cookie_name, {
+        path: '/',
+        secure: $location.protocol() === "https",
+        domain: h.slice(len - i).join(".")
+      });
+    }
   }
 
   function has_role(roles, chk_fn) {
