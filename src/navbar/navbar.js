@@ -78,7 +78,7 @@ angular
   '<ul class="nav navbar-nav">\n'+
 
   '  <li ui-sref-active="active" uib-dropdown="" is-open="tree.isopen" ng-repeat="tree in navbarTree" ng-init="tree.isopen = false"\n'+
-  '  class="ng-hide" ng-show="$root.Auth.hasPermissions(tree.permissions) && $root.Auth.hasRoles(tree.roles)">\n'+
+  '  class="ng-hide" ng-show="$root.Auth.hasPermissionsAny(tree.permissionsAny) && $root.Auth.hasPermissions(tree.permissions) && $root.Auth.hasRoles(tree.roles)">\n'+
   '    <a uib-dropdown-toggle="" ng-mouseover="tree.isopen = true" ui-sref=\"{{tree.state}}\" ng-click-if="!tree.subtree">\n'+
   '      <span ng-bind-html-and-compile="tree.name" translate></span>\n'+
   '      <b class="caret" class="ng-hide" ng-show="tree.subtree"></b>\n'+

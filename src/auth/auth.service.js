@@ -263,15 +263,13 @@ angular
     hasRoles: function(roles) {
       return has_role(roles, 'every');
     },
-    // at least one
-    hasALORoles: function(roles) {
+    hasRolesAny: function(roles) {
       return has_role(roles, 'some');
     },
     hasPermissions: function(perms) {
       return has_permission(perms, 'every');
     },
-    // at least one
-    hasALOPermission: function(perms) {
+    hasPermissionsAny: function(perms) {
       return has_permission(perms, 'some');
     },
     /**
