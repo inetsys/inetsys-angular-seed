@@ -194,7 +194,7 @@ angular
       $log.debug('(errorInterceptor) responseError::', response);
 
       // manage 4XX & 5XX
-      if (response.status >= 400) {
+      if (response.status >= 400 && !response.config.noModalError) {
         var errors = errorFormat(response);
 
         // TODO handle retry
@@ -206,6 +206,23 @@ angular
     }
   };
 }])
+// $http({recoverErrorStatus: 200})
+// usage: do not fail to resolve a state, just ignore possible errors
+// maybe need: noModalError, to not display the error.
+.factory('recoverErrorStatusInterceptor', ['$q', '$injector', '$interpolate', '$log', 'errorHandler', 'errorFormat', function ($q, $injector, $interpolate, $log, errorHandler, errorFormat) {
+  return {
+    responseError: function (response) {
+      if (response.config.recoverErrorStatus) {
+        $log.debug('(recoverErrorStatusInterceptor) recover', response);
+        response.status = response.config.recoverErrorStatus;
+        return response;
+      }
+
+      return $q.reject(response);
+    }
+  };
+}])
 .config(function ($httpProvider) {
+  $httpProvider.interceptors.push('recoverErrorStatusInterceptor');
   $httpProvider.interceptors.push('errorInterceptor');
 });

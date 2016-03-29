@@ -99,8 +99,33 @@ $http({
   url: 'YYYY',
   noLoading: true
 })
-
 ```
+
+## do not display modal on error
+```js
+$http({
+  method: 'XXXX',
+  url: 'YYYY',
+  noModalError: true
+})
+```
+
+## Request never fail
+
+Some request may raise an error, if they are in state.resolve
+you will never reach the desired state. `recoverErrorStatus` force
+the status if an error is found.
+
+```js
+$http({
+  method: 'XXXX',
+  url: 'YYYY',
+  recoverErrorStatus: 200
+})
+```
+
+
+
 
 ### confirmStateExit
 
