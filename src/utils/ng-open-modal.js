@@ -1,6 +1,6 @@
 "use strict";
 
-// usage: ng-open-modal="/views/xxx.tpl.html"
+// usage: ng-open-modal="/views/xxx.tpl.html" [size="lg"]
 
 angular
 .module('app')
@@ -12,6 +12,7 @@ angular
         var html = $scope.$eval($attrs.ngOpenModal);
         var modalInstance = $uibModal.open({
           templateUrl: html,
+          size: $attrs.size,
           controller: ['$scope', function($scope_modal) {
             $scope_modal.close = function(){
               modalInstance.close();
