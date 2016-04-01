@@ -8,12 +8,21 @@ angular
 .provider("navbarLeft", function () {
   this.tree = [];
 
+  function set_defaults(data) {
+    data.subtree = data.subtree || [];
+    var i = 0;
+    for(; i < data.subtree.length; ++i) {
+      set_defaults(data.subtree[i]);
+    }
+  }
+
   this.$get = function () {
     return this;
   };
   this.push = function (order, data) {
     data.index = order;
     this.tree.push(data);
+    set_defaults(data);
   };
   this.sort = function() {
     this.tree.sort(function(a, b) {
@@ -79,11 +88,11 @@ angular
 
   '  <li ui-sref-active="active" uib-dropdown="" is-open="tree.isopen" ng-repeat="tree in navbarTree" ng-init="tree.isopen = false"\n'+
   '  class="ng-hide" ng-show="$root.Auth.hasPermissionsAny(tree.permissionsAny) && $root.Auth.hasPermissions(tree.permissions) && $root.Auth.hasRoles(tree.roles)">\n'+
-  '    <a uib-dropdown-toggle="" ng-mouseover="tree.isopen = true" ui-sref=\"{{tree.state}}\" ng-click-if="!tree.subtree">\n'+
+  '    <a uib-dropdown-toggle="" ng-mouseover="tree.isopen = true" ui-sref=\"{{tree.state}}\" ng-click-if="!tree.subtree.length">\n'+
   '      <span ng-bind-html-and-compile="tree.name" translate></span>\n'+
-  '      <b class="caret" class="ng-hide" ng-show="tree.subtree"></b>\n'+
+  '      <b class="caret" class="ng-hide" ng-show="tree.subtree.length"></b>\n'+
   '    </a>\n'+
-  '    <navbar-sub-tree navbar-sub-tree="tree.subtree" class="ng-hide" ng-show="tree.subtree"></navbar-sub-tree>\n'+
+  '    <navbar-sub-tree navbar-sub-tree="tree.subtree" class="ng-hide" ng-show="tree.subtree.length"></navbar-sub-tree>\n'+
   '  </li>\n'+
   '</ul>');
 

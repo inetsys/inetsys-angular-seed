@@ -2,7 +2,7 @@
 
 angular
 .module('app')
-.controller('LoginCtrl', function ($scope, Auth, $state, $stateParams, authConfig, $log) {
+.controller('LoginCtrl', function ($scope, Auth, $state, $stateParams, authConfig, $injector, $log) {
   $scope.user = {};
   $scope.errors = {};
   $scope.submitted = false;
@@ -18,7 +18,11 @@ angular
 
       $state.go($stateParams.redirectTo, p);
     } else {
-      $state.go(authConfig.state_after_login);
+      if ("string" === typeof authConfig.state_after_login) {
+        $state.go(authConfig.state_after_login);
+      } else {
+        $injector.invoke(authConfig.state_after_login);
+      }
     }
   }
 
