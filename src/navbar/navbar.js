@@ -103,7 +103,7 @@ angular
   "</ul>");
 
   $templateCache.put("template/navbar-li.html",
-  "<li class=\"ng-hide\" ng-class=\"{divider: navbarLeaf.name == 'divider'}\" ng-show=\"$root.Auth.hasPermissions(navbarLeaf.permissions) && $root.Auth.hasRoles(navbarLeaf.roles)\">\n" +
+  "<li ui-sref-active=\"active\" class=\"ng-hide\" ng-class=\"{divider: navbarLeaf.name == 'divider'}\" ng-show=\"$root.Auth.hasPermissions(navbarLeaf.permissions) && $root.Auth.hasRoles(navbarLeaf.roles)\">\n" +
   "  <a class=\"ng-hide\" ui-sref=\"{{navbarLeaf.state}}\" ng-hide=\"navbarLeaf.name === 'divider'\">{{navbarLeaf.name}}</a>\n" +
   "</li>");
 
