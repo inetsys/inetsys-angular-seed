@@ -76,8 +76,7 @@ angular
     if (len === 1) {
       $cookies.remove(authConfig.cookie_name, {
         path: '/',
-        secure: $location.protocol() === "https",
-        domain: $location.host()
+        secure: $location.protocol() === "https"
       });
     } else {
       // sub-domains
