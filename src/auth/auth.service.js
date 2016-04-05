@@ -72,12 +72,23 @@ angular
     var len = h.length;
     var i;
 
-    for(i = 2; i <= len; ++i) {
+    // main domain
+    if (len === 1) {
       $cookies.remove(authConfig.cookie_name, {
         path: '/',
         secure: $location.protocol() === "https",
-        domain: h.slice(len - i).join(".")
+        domain: $location.host()
       });
+    } else {
+      // sub-domains
+      for(i = 2; i <= len; ++i) {
+        console.log(h.slice(len - i).join("."));
+        $cookies.remove(authConfig.cookie_name, {
+          path: '/',
+          secure: $location.protocol() === "https",
+          domain: h.slice(len - i).join(".")
+        });
+      }
     }
   }
 
