@@ -8,11 +8,36 @@ angular
 .provider("navbarLeft", function () {
   this.tree = [];
 
-  function set_defaults(data) {
+  function concat(dst, src) {
+    if (!src) {
+      return dst;
+    }
+
+    if (!dst) {
+      dst = [];
+    }
+    var i;
+    for (i = 0; i < src.length; ++src) {
+      dst.push(src[i]);
+    }
+
+    return dst;
+  }
+
+  function set_defaults(data, parent) {
     data.subtree = data.subtree || [];
+    // NOTE copy parent permissions/roles into children
+    // this force to hide each child individually
+    // and make them more testable.
+    if (parent) {
+      ["permissions", "permissionsAny", "roles", "rolesAny"].forEach(function(k) {
+        data[k] = concat(data[k], parent[k]);
+      });
+    }
+
     var i = 0;
     for(; i < data.subtree.length; ++i) {
-      set_defaults(data.subtree[i]);
+      set_defaults(data.subtree[i], data);
     }
   }
 
