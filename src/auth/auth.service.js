@@ -24,6 +24,7 @@ angular
   this.token_header = 'X-Access-Token';
   this.token_prefix = 'Bearer ';
   this.cookie_name = 'token';
+  this.cookie_domain = null;
 
   // server side header to force session expired -> will logout user
   this.expiration_header = 'X-Session-Expired';
@@ -62,33 +63,20 @@ angular
   function set_token(data) {
     $cookies.put(authConfig.cookie_name, data, {
       path: '/',
-      secure: $location.protocol() === "https"
+      secure: $location.protocol() === "https",
+      domain: authConfig.cookie_domain
     });
   }
   // remove token will remove the cookie in current domain
   // and all parent domains
   function remove_token() {
-    var h = $location.host().split(".");
-    var len = h.length;
-    var i;
-
     // main domain
-    if (len === 1) {
-      $cookies.remove(authConfig.cookie_name, {
-        path: '/',
-        secure: $location.protocol() === "https"
-      });
-    } else {
-      // sub-domains
-      for(i = 2; i <= len; ++i) {
-        console.log(h.slice(len - i).join("."));
-        $cookies.remove(authConfig.cookie_name, {
-          path: '/',
-          secure: $location.protocol() === "https",
-          domain: h.slice(len - i).join(".")
-        });
-      }
-    }
+    $cookies.remove(authConfig.cookie_name, {
+      path: '/',
+      secure: $location.protocol() === "https",
+      domain: authConfig.cookie_domain
+    });
+    $log.log("(Auth) get_token()?? ", get_token());
   }
 
   function has_role(roles, chk_fn) {
