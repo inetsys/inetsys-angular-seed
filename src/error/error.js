@@ -6,7 +6,9 @@ angular
 .provider("errorConfig", function () {
   // url that return user data
   this.default_template = 'src/error/error.tpl.html';
-  this.templates = {};
+  this.templates = {
+    html: 'src/error/error-html.tpl.html'
+  };
 
   this.$get = function () {
     return this;
@@ -165,6 +167,17 @@ angular
 }])
 .factory('errorFormat', function() {
   return function(response) {
+    // html-error ?
+    if (
+      'string' === typeof response.data &&
+      'text/html' === response.headers('Content-Type')
+    ) {
+      return {
+        html: response.data,
+        type: 'html'
+      };
+    }
+
     var error = {
       list: [],
       type: null
