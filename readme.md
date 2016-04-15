@@ -1,27 +1,27 @@
 ## inetsys-angular-seed
 
 This package include all needed to bootstrap an angular app.
-It's not a module, it will configure your app, and require the your app
-to be called: **app**
+It's not a module, it will configure your app, and require that your app
+to be named: **app**
 
 This is the minimum initialization needed:
 
 ```js
 angular
 .module('app', [
-  'ui.bootstrap',
-  'ui.router',
-  'ngCookies',
-  'cgBusy'
+  'ui.bootstrap', // modals, error handling, navbar, dirty form confirmations
+  'ui.router', // loading screens, session
+  'ngCookies', // session
+  'cgBusy' // loading screens
 ])
 ```
 
 tested with:
 * JQuery 2.1.4
 * angular 1.5.0
-* angular-bootstrap 1.1.2
+* angular-bootstrap 1.3.1
 * angular-ui-router 0.2.18
-* angular-cookie 4.0.10
+* angular-cookies 4.0.10
 * angular-busy 4.1.3
 
 ## Components
@@ -39,6 +39,8 @@ tested with:
 * src/utils/raw-request.js
 
   Configure your app to use RAW-HTML-BODY-OLD-FASHION requests, this will remove the JSON-body configuration by default in angular!!
+
+  Add this file with caution! There is no turning back!
 
 
 ## Installation
@@ -70,9 +72,14 @@ Optionals
 ```json
 [
   "src/utils/raw-request.js",
+  "src/utils/formalizer.js"
+  "src/utils/ng-open-modal.js"
   "src/utils/ui-router-redirect.js"
+  "src/utils/data-source.js"
+  "src/utils/ng-click-if.js"
 ]
 ```
+
 
 **NOTE**: navbar require https://github.com/inetsys/ng-formalizer/blob/master/lib/ng-compile.js
 
@@ -84,11 +91,50 @@ angular
 .module('app')
 .run(['$state', function override_login($state) {
    var state = $state.get('login');
-   state.templateUrl = 'paty-to-my-login-view/login.tpl.html';
+   state.templateUrl = 'path-to-my-login-view/login.tpl.html';
 }]);
 ```
 
 ## Usage
+
+### angular.app("xx").dataSource
+
+DataSource it's a shortcut to keep select values sane.
+Allow it to use it to create, update, or filter and be displayed.
+
+```js
+// first dataSource need to be injected in your app.
+setDataSource(angular.module('app'))
+.dataSource('name_of_the_value',[
+  {"id": "xxx", "label": "yyy"} // always id-label!
+], 'name_of_the_filter', "label of the default null value")
+.dataSource()
+.value() // get the idea can be chained, after setDataSource
+
+
+//
+// what it does ?
+//
+// source for create/update that cannot be null
+$rootScope.name_of_the_value = [
+  {"id": "xxx", "label": "yyy"}
+];
+
+// source for filters or update/create that can be null
+$rootScope.name_of_the_value_filters = [
+  {"id": null, "label": "label of the default null value"},
+  {"id": "xxx", "label": "yyy"}
+];
+// for display a readable label
+.filter('name_of_the_filter', function() {
+  function(id) {
+    // 1. search id @ filters and return the label.
+    // 2. if is an array, separated by ,
+    // 3. if is an object, search its id and do 1.
+  }
+})
+
+```
 
 ### Loading bypass
 Do a request but do not show loading screen:
