@@ -30,6 +30,10 @@ function setDataSource(app) {
           }).join(", ");
         }
 
+        if ("object" === typeof id) {
+          return source_get_label(values, id.key || id.id);
+        }
+
         var i;
         for (i = 0; i < values.length; ++i) {
           if (values[i].id === id) {

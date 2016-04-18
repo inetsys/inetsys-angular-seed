@@ -166,11 +166,12 @@ angular
   };
 }])
 .factory('errorFormat', function() {
+  var text_html = new RegExp("text\/html", "i");
   return function(response) {
     // html-error ?
     if (
       'string' === typeof response.data &&
-      'text/html' === response.headers('Content-Type')
+      text_html.test(response.headers('Content-Type'))
     ) {
       return {
         html: response.data,
