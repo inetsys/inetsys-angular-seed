@@ -3,13 +3,13 @@
 // Redirect to the first element in the given menu
 // you should send the same structure nabvarLeft has
 // example:
-// authConfigProvider.state_after_login = ["GotoFirstElement", function(GotoFirstElement) {
+// authConfigProvider.state_after_login = ['GotoFirstElement', function(GotoFirstElement) {
 //   GotoFirstElement(navbarLeftProvider.$get());
 // }];
 
 angular
-.module("app")
-.factory("GotoFirstElement", function($state, Auth, $log) {
+.module('app')
+.factory('GotoFirstElement', function($state, Auth, $log) {
   return function GotoFirstElement(navbar) {
     //console.log(JSON.stringify(navbar, null, 2));
 
@@ -26,13 +26,13 @@ angular
       for (i = 0; i < list.length; ++i) {
         if (allowed(list[i])) {
           if (list[i].subtree.length) {
-            $log.log("(GotoFirstElement) allowed continue testing inner list");
+            $log.log('(GotoFirstElement) allowed continue testing inner list');
             if (loop_list(list[i].subtree)) {
               return true;
             }
             // dont have permissions for any item in the list :S
           } else {
-            $log.log("(GotoFirstElement) redirecto", list[i].state);
+            $log.log('(GotoFirstElement) redirecto', list[i].state);
             $state.go(list[i].state);
             return true;
           }

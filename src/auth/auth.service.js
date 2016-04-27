@@ -6,7 +6,7 @@
 // emit $logout & $login event to rootScope
 angular
 .module('app')
-.provider('authConfig', function () {
+.provider('authConfig', function() {
   // url/method that return user data
   this.api_users_data_method = 'POST';
   this.api_users_data = '/api/users/me';
@@ -29,7 +29,7 @@ angular
   // server side header to force session expired -> will logout user
   this.expiration_header = 'X-Session-Expired';
 
-  this.$get = function () {
+  this.$get = function() {
     return this;
   };
 })
@@ -63,7 +63,7 @@ angular
   function set_token(data) {
     $cookies.put(authConfig.cookie_name, data, {
       path: '/',
-      secure: $location.protocol() === "https",
+      secure: $location.protocol() === 'https',
       domain: authConfig.cookie_domain
     });
   }
@@ -73,10 +73,10 @@ angular
     // main domain
     $cookies.remove(authConfig.cookie_name, {
       path: '/',
-      secure: $location.protocol() === "https",
+      secure: $location.protocol() === 'https',
       domain: authConfig.cookie_domain
     });
-    $log.log("(Auth) get_token()?? ", get_token());
+    $log.log('(Auth) get_token()?? ', get_token());
   }
 
   function has_role(roles, chk_fn) {
@@ -128,7 +128,7 @@ angular
       }
       // currentUser.permissions is an object
       var ref = currentUser.permissions;
-      return perm.split(".").every(function(k) {
+      return perm.split('.').every(function(k) {
         if (ref[k]) {
           ref = ref[k];
           return true;
@@ -140,7 +140,7 @@ angular
 
   $log.debug('(Auth) Token', get_token());
 
-  if(get_token()) {
+  if (get_token()) {
     login_in_prog = login_me()
     .finally(function() {
       login_in_prog = null;
@@ -247,7 +247,7 @@ angular
 
       if (currentUser.hasOwnProperty('id')) {
         cb(true);
-      } else if(login_in_prog) {
+      } else if (login_in_prog) {
         login_in_prog
           .then(function() {
             cb(true);
@@ -276,10 +276,10 @@ angular
     getToken: get_token
   });
 })
-.factory('authInterceptor', function ($injector, $q) {
+.factory('authInterceptor', function($injector, $q) {
   return {
     // Add authorization token to headers
-    request: function (config) {
+    request: function(config) {
       var authConfig = $injector.get('authConfig');
       var Auth = $injector.get('Auth');
       config.headers = config.headers || {};
@@ -289,11 +289,11 @@ angular
       }
       return config;
     },
-    responseError: function (response) {
+    responseError: function(response) {
       var authConfig = $injector.get('authConfig');
       var Auth = $injector.get('Auth');
 
-      if (response.headers(authConfig.expiration_header)){
+      if (response.headers(authConfig.expiration_header)) {
         Auth.logout();
       }
 
@@ -301,7 +301,7 @@ angular
     }
   };
 })
-.config(function ($httpProvider) {
+.config(function($httpProvider) {
   $httpProvider.interceptors.push('authInterceptor');
 })
 // just run it so it can autologin

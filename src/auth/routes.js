@@ -2,7 +2,7 @@
 
 angular
 .module('app')
-.config(function ($stateProvider) {
+.config(function($stateProvider) {
   $stateProvider
   .state('error', {
     url: '/error',

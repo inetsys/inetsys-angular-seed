@@ -1,11 +1,13 @@
-"use strict";
+'use strict';
 
+//
 // this is an option module
 // will configure your app to use raw-urlencoded-body instead of json-body
+//
 
 angular
-.module("app")
-.config(function ($httpProvider) {
+.module('app')
+.config(function($httpProvider) {
   // raw request no json-body
   $httpProvider.defaults.headers.get = $httpProvider.defaults.headers.get || {};
   $httpProvider.defaults.headers.patch = $httpProvider.defaults.headers.patch || {};

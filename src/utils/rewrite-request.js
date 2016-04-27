@@ -1,21 +1,25 @@
 'use strict';
 
+//
 // this will rewrite any request
 // usefull to keep isolated frontend from backend versioning
+//
 
 angular
-.module("app")
-// Reescribe las url que empiezan por /api
-.provider('rewriteRequestConfig', function () {
+.module('app')
+.provider('rewriteRequestConfig', function() {
+  // Rewrite urls that start with
   this.start_with = {};
+  // Add custom header to all request
   this.add_header = {};
-  this.$get = function () {
+
+  this.$get = function() {
     return this;
   };
 })
-.factory('rewriteInterceptor', function (rewriteRequestConfig) {
+.factory('rewriteInterceptor', function(rewriteRequestConfig) {
   return {
-    request: function (config) {
+    request: function(config) {
       var i, url;
 
       config.headers = config.headers || {};
@@ -28,13 +32,12 @@ angular
         if (config.url.indexOf(i) === 0) {
           config.url = url + config.url.substring(i.length);
         }
-
       }
       //console.info(config);
       return config;
     }
   };
 })
-.config(function ($httpProvider) {
+.config(function($httpProvider) {
   $httpProvider.interceptors.push('rewriteInterceptor');
 });

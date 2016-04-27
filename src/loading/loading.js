@@ -28,53 +28,53 @@ angular
   };
 })
 // state change -> loading!
-.run(function ($rootScope, chainLoadingQ, $log) {
+.run(function($rootScope, chainLoadingQ, $log) {
   var defer = null;
 
-  $rootScope.$on("$stateChangeStart", function (event, toState/*, toParams, fromState, fromParams*/) {
-    $log.debug("(Loading) $stateChangeStart", toState.name);
+  $rootScope.$on('$stateChangeStart', function(event, toState/*, toParams, fromState, fromParams*/) {
+    $log.debug('(Loading) $stateChangeStart', toState.name);
     if (!defer) {
       defer = chainLoadingQ();
     }
   });
 
-  $rootScope.$on("$stateChangePrevented", function(event, toState/*, toParams, fromState, fromParams*/) {
-    $log.debug("(Loading) $stateChangePrevented", toState.name);
+  $rootScope.$on('$stateChangePrevented', function(event, toState/*, toParams, fromState, fromParams*/) {
+    $log.debug('(Loading) $stateChangePrevented', toState.name);
     if (defer) {
       defer.resolve();
       defer = null;
     }
   });
-  $rootScope.$on("$stateChangeSuccess", function(event, toState/*, toParams, fromState, fromParams*/) {
-    $log.debug("(Loading) $stateChangeSuccess", toState.name);
-    if (defer) {
-      defer.resolve();
-      defer = null;
-    }
-  });
-
-  $rootScope.$on("$stateChangeError", function (/*event, tostate, toparams*/) {
-    $log.error("(Loading) $stateChangeError", arguments);
+  $rootScope.$on('$stateChangeSuccess', function(event, toState/*, toParams, fromState, fromParams*/) {
+    $log.debug('(Loading) $stateChangeSuccess', toState.name);
     if (defer) {
       defer.resolve();
       defer = null;
     }
   });
 
-  $rootScope.$on("$stateNotFound", function (/*event, unfoundState, fromState, fromParams*/) {
-    $log.error("(Loading) $stateNotFound", arguments);
+  $rootScope.$on('$stateChangeError', function(/*event, tostate, toparams*/) {
+    $log.error('(Loading) $stateChangeError', arguments);
+    if (defer) {
+      defer.resolve();
+      defer = null;
+    }
+  });
+
+  $rootScope.$on('$stateNotFound', function(/*event, unfoundState, fromState, fromParams*/) {
+    $log.error('(Loading) $stateNotFound', arguments);
     if (defer) {
       defer.resolve();
       defer = null;
     }
   });
 })
-.factory('httpLoadingInterceptor', function ($q, $rootScope, $log, chainLoadingQ) {
+.factory('httpLoadingInterceptor', function($q, $rootScope, $log, chainLoadingQ) {
   var requests = 0;
   var defer = null;
 
   return {
-    request: function (config) {
+    request: function(config) {
       if (config.noLoading) {
         return config;
       }
@@ -86,30 +86,30 @@ angular
       }
 
       // Show loader
-      $rootScope.$broadcast("$loading");
+      $rootScope.$broadcast('$loading');
       return config;
     },
-    response: function (response) {
+    response: function(response) {
       if (response.config.noLoading) {
         return response;
       }
 
       if ((--requests) === 0) {
         // Hide loader
-        $rootScope.$broadcast("$loaded");
+        $rootScope.$broadcast('$loaded');
         defer.resolve();
       }
 
       return response;
     },
-    responseError: function (response) {
+    responseError: function(response) {
       if (response.config.noLoading) {
         return $q.reject(response);
       }
 
       if ((--requests) === 0) {
         // Hide loader
-        $rootScope.$broadcast("$loaded");
+        $rootScope.$broadcast('$loaded');
         defer.resolve();
       }
 
@@ -117,6 +117,6 @@ angular
     }
   };
 })
-.config(function ($httpProvider) {
+.config(function($httpProvider) {
   $httpProvider.interceptors.push('httpLoadingInterceptor');
 });

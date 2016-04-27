@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 // usage: confirmStateExit($scope, 'form.$dirty' [, tpl])
 
@@ -7,7 +7,7 @@ angular
 .provider('confirmStateExitConfig', function() {
   this.template = 'src/confirm-state-exit/dirty-modal.tpl.html';
 
-  this.$get = function () {
+  this.$get = function() {
     return this;
   };
 })
@@ -21,8 +21,8 @@ angular
     var cse = {
       confirmed: false,
       is_dirty: function(event, toState, toParams, fromState, fromParams) {
-        if ("function" === typeof cond_expr) {
-          $log.debug("(confirmStateExit) cond_expr()");
+        if ('function' === typeof cond_expr) {
+          $log.debug('(confirmStateExit) cond_expr()');
           return cond_expr(cse, event, toState, toParams, fromState, fromParams);
         }
 
@@ -30,7 +30,7 @@ angular
       },
       prevent: function prevent(event, toState, toParams, fromState, fromParams) {
         event.preventDefault();
-        $rootScope.$emit("$stateChangePrevented", event, toState, toParams, fromState, fromParams);
+        $rootScope.$emit('$stateChangePrevented', event, toState, toParams, fromState, fromParams);
       },
       go: function(toState, toParams) {
         cse.confirmed = true;
@@ -46,13 +46,13 @@ angular
           controller: ['$scope', function($scope_modal) {
             open_cb && open_cb($scope_modal);
 
-            $scope_modal.ok = function () {
+            $scope_modal.ok = function() {
               opened = false;
               ok && ok(modalInstance);
               modalInstance.close();
             };
 
-            $scope_modal.leave = function () {
+            $scope_modal.leave = function() {
               opened = false;
               leave && leave(modalInstance);
               modalInstance.close();
@@ -65,15 +65,15 @@ angular
     // if dirty, show a warning
     var cancel_dirty_leave = $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
       // avoid double open when $locationProvider.when is in use
-      console.log("opened", opened);
+      $log.log('(confirmStateExit) opened', opened);
       if (opened) {
         cse.prevent(event, toState, toParams, fromState, fromParams);
-         return;
+        return;
       }
 
       var is_dirty = cse.is_dirty(event, toState, toParams, fromState, fromParams);
 
-      console.log("cse.confirmed", cse.confirmed);
+      $log.log('(confirmStateExit) cse.confirmed', cse.confirmed);
 
       if (is_dirty && !cse.confirmed) {
         cse.prevent(event, toState, toParams, fromState, fromParams);
@@ -88,7 +88,7 @@ angular
       }
     });
 
-    $scope.$on("$destroy", function() {
+    $scope.$on('$destroy', function() {
       cancel_dirty_leave();
     });
 

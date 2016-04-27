@@ -1,27 +1,27 @@
-"use strict";
+'use strict';
 
 module.exports = function(app) {
   app.post('/api/users/me', function(req, res, next) {
     // TODO check token
     if (!req.headers['x-access-token']) {
-      return res.status(401).json({error: "No session"});
+      return res.status(401).json({error: 'No session'});
     }
 
-    if (req.headers['x-access-token'] != "Bearer 1235fd1sdfs6f5sd1f6s") {
-      return res.status(401).json({error: "Invalid session"});
+    if (req.headers['x-access-token'] != 'Bearer 1235fd1sdfs6f5sd1f6s') {
+      return res.status(401).json({error: 'Invalid session'});
     }
 
     res.status(200).json({
-      "id": 1,
-      "username": "username",
-      "permissions": ["do magic"],
-      "roles": ["user"],
+      'id': 1,
+      'username': 'username',
+      'permissions': ['do magic'],
+      'roles': ['user'],
     });
   });
 
   app.post('/api/auth', function(req, res, next) {
     res.status(200).json({
-      "token": "1235fd1sdfs6f5sd1f6s"
+      'token': '1235fd1sdfs6f5sd1f6s'
     });
   });
 
@@ -40,7 +40,7 @@ module.exports = function(app) {
   app.use('/api/error-single/:status', function(req, res, next) {
     var status = parseInt(req.params.status);
     res.status(status).json({
-      error: "This is the error text"
+      error: 'This is the error text'
     });
   });
 
@@ -48,9 +48,9 @@ module.exports = function(app) {
     var status = parseInt(req.params.status);
     res.status(status).json({
       error: [
-        "This is a error list",
-        "here you have more text",
-        "and more!!!"
+        'This is a error list',
+        'here you have more text',
+        'and more!!!'
       ]
     });
   });
@@ -58,9 +58,9 @@ module.exports = function(app) {
   var force_times = 0;
   app.use('/api/error-template/:status', function(req, res, next) {
     var t = req.query.force;
-    console.log("t", t);
+    console.log('t', t);
     // TODO fix: Array.isArray(t)
-    if (t == "true" || Array.isArray(t)) {
+    if (t == 'true' || Array.isArray(t)) {
       ++force_times;
 
       if (force_times == 2) {
@@ -70,12 +70,12 @@ module.exports = function(app) {
     }
     var status = parseInt(req.params.status);
     res.status(status).json({
-      type: "retryable",
+      type: 'retryable',
       error: [
-        "This is a error list",
-        "here you have more text",
-        "and more!!!",
-        "force times: " + force_times
+        'This is a error list',
+        'here you have more text',
+        'and more!!!',
+        'force times: ' + force_times
       ]
     });
   });
@@ -83,7 +83,7 @@ module.exports = function(app) {
   app.use('/api/require-login', function(req, res, next) {
     if (!req.headers['x-access-token']) {
       return res.status(401).json({
-        error: "Url required to be logged"
+        error: 'Url required to be logged'
       });
     }
 
@@ -93,7 +93,7 @@ module.exports = function(app) {
   app.use('/api/error-if-logged', function(req, res, next) {
     if (req.headers['x-access-token']) {
       return res.status(400).json({
-        error: "Force anonymous url!"
+        error: 'Force anonymous url!'
       });
     }
 
@@ -104,11 +104,8 @@ module.exports = function(app) {
     res.set('X-Session-Expired', 1);
 
     return res.status(401).json({
-      error: "session expired"
+      error: 'session expired'
     });
   });
-
-
-
 
 };

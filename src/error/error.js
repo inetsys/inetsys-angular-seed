@@ -3,19 +3,19 @@
 // $rootScope.modal_error, contains if there is a model active
 angular
 .module('app')
-.provider("errorConfig", function () {
+.provider('errorConfig', function() {
   // url that return user data
   this.default_template = 'src/error/error.tpl.html';
   this.templates = {
     html: 'src/error/error-html.tpl.html'
   };
 
-  this.$get = function () {
+  this.$get = function() {
     return this;
   };
 })
 // This http interceptor listens for authentication failures
-.factory('errorHandler', ['$injector', '$log', 'errorConfig', '$q', function ($injector, $log, errorConfig, $q) {
+.factory('errorHandler', ['$injector', '$log', 'errorConfig', '$q', function($injector, $log, errorConfig, $q) {
   var error_list = [];
   var instance;
 
@@ -86,29 +86,29 @@ angular
 
 
     instance = $uibModal.open({
-      size: err.type ? 'lg': undefined,
+      size: err.type ? 'lg' : undefined,
       templateUrl: templateUrl,
       //scope: $rootScope,
       backdrop: 'static',
       keyboard: false,
-      controller: ['$scope', '$uibModalInstance', function ($scope, $uibModalInstance) {
+      controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance) {
         $scope.templateUrl = templateUrl;
         $scope.error = err;
 
         // TODO
         // we should retry the request adding param to query
-        $scope.retry = function (param) {
+        $scope.retry = function(param) {
           // why not clone?
           // we may need to add more than one param because there are
           // two confirmations
           //var config = angular.copy(err_data.response[0].config);
           var config = err_data.response[0].config;
 
-          $log.debug("(errorHandler) retry", param, config);
-          if (config.url.indexOf("?") !== -1) {
-            config.url += "&" + param + "=true";
+          $log.debug('(errorHandler) retry', param, config);
+          if (config.url.indexOf('?') !== -1) {
+            config.url += '&' + param + '=true';
           } else {
-            config.url += "?" + param + "=true";
+            config.url += '?' + param + '=true';
           }
 
           pop_error(false);
@@ -117,22 +117,22 @@ angular
 
           $http(config)
           .then(function(response) {
-            $log.debug("(errorHandler) success", response);
+            $log.debug('(errorHandler) success', response);
             err_data.deferred[0].resolve(response);
           }, function(response) {
-            $log.debug("(errorHandler) error", response);
+            $log.debug('(errorHandler) error', response);
             err_data.deferred[0].reject(response);
           });
         };
 
-        $scope.close = function () {
+        $scope.close = function() {
           pop_error(true);
 
           instance = null;
           $uibModalInstance.close(null);
         };
 
-        $scope.ok = function () {
+        $scope.ok = function() {
           pop_error(true);
 
           instance = null;
@@ -166,7 +166,7 @@ angular
   };
 }])
 .factory('errorFormat', function() {
-  var text_html = new RegExp("text\/html", "i");
+  var text_html = new RegExp('text\/html', 'i');
   return function(response) {
     // html-error ?
     if (
@@ -202,9 +202,9 @@ angular
     return error;
   };
 })
-.factory('errorInterceptor', ['$q', '$injector', '$interpolate', '$log', 'errorHandler', 'errorFormat', function ($q, $injector, $interpolate, $log, errorHandler, errorFormat) {
+.factory('errorInterceptor', ['$q', '$injector', '$interpolate', '$log', 'errorHandler', 'errorFormat', function($q, $injector, $interpolate, $log, errorHandler, errorFormat) {
   return {
-    responseError: function (response) {
+    responseError: function(response) {
       $log.debug('(errorInterceptor) responseError::', response);
 
       // manage 4XX & 5XX
@@ -223,9 +223,9 @@ angular
 // $http({recoverErrorStatus: 200})
 // usage: do not fail to resolve a state, just ignore possible errors
 // maybe need: noModalError, to not display the error.
-.factory('recoverErrorStatusInterceptor', ['$q', '$injector', '$interpolate', '$log', 'errorHandler', 'errorFormat', function ($q, $injector, $interpolate, $log, errorHandler, errorFormat) {
+.factory('recoverErrorStatusInterceptor', ['$q', '$injector', '$interpolate', '$log', 'errorHandler', 'errorFormat', function($q, $injector, $interpolate, $log, errorHandler, errorFormat) {
   return {
-    responseError: function (response) {
+    responseError: function(response) {
       if (response.config.recoverErrorStatus) {
         $log.debug('(recoverErrorStatusInterceptor) recover', response);
         response.status = response.config.recoverErrorStatus;
@@ -236,7 +236,7 @@ angular
     }
   };
 }])
-.config(function ($httpProvider) {
+.config(function($httpProvider) {
   $httpProvider.interceptors.push('recoverErrorStatusInterceptor');
   $httpProvider.interceptors.push('errorInterceptor');
 });

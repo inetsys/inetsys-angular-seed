@@ -2,7 +2,7 @@
 
 angular
 .module('app')
-.controller('LoginCtrl', function ($scope, Auth, $state, $stateParams, authConfig, $injector, $log) {
+.controller('LoginCtrl', function($scope, Auth, $state, $stateParams, authConfig, $injector, $log) {
   $scope.user = {};
   $scope.errors = {};
   $scope.submitted = false;
@@ -14,11 +14,11 @@ angular
       var p;
       try {
         p = JSON.parse($stateParams.redirectToParams);
-      }catch(e) { $log.error(e); p = null; }
+      } catch (e) { $log.error(e); p = null; }
 
       $state.go($stateParams.redirectTo, p);
     } else {
-      if ("string" === typeof authConfig.state_after_login) {
+      if ('string' === typeof authConfig.state_after_login) {
         $state.go(authConfig.state_after_login);
       } else {
         $injector.invoke(authConfig.state_after_login);
@@ -28,7 +28,7 @@ angular
 
   Auth.isLoggedInAsync(function(logged) {
     if (logged) {
-      $log.debug("(LoginCtrl) user is logged just redirect");
+      $log.debug('(LoginCtrl) user is logged just redirect');
 
       return redirect();
     }
@@ -38,8 +38,8 @@ angular
   $scope.login = function(form) {
     $scope.submitted = true;
 
-    if(form.$valid) {
-      $log.debug("(LoginCtrl) submit form");
+    if (form.$valid) {
+      $log.debug('(LoginCtrl) submit form');
 
       Auth.login(
         $scope.user.username,
