@@ -95,20 +95,25 @@ angular
         $scope.templateUrl = templateUrl;
         $scope.error = err;
 
-        // TODO
-        // we should retry the request adding param to query
-        $scope.retry = function(param) {
+        // retry the request adding param to query and merge body
+        $scope.retry = function(param, body) {
           // why not clone?
           // we may need to add more than one param because there are
           // two confirmations
           //var config = angular.copy(err_data.response[0].config);
           var config = err_data.response[0].config;
 
-          $log.debug('(errorHandler) retry', param, config);
+          $log.debug('(errorHandler) retry', config, param);
+          // TODO this could append multiple times...
           if (config.url.indexOf('?') !== -1) {
             config.url += '&' + param + '=true';
           } else {
             config.url += '?' + param + '=true';
+          }
+
+          if (body) {
+            config.data = config.data || {};
+            angular.extend(config.data, body);
           }
 
           pop_error(false);
@@ -223,7 +228,7 @@ angular
 // $http({recoverErrorStatus: 200})
 // usage: do not fail to resolve a state, just ignore possible errors
 // maybe need: noModalError, to not display the error.
-.factory('recoverErrorStatusInterceptor', ['$q', '$injector', '$interpolate', '$log', 'errorHandler', 'errorFormat', function($q, $injector, $interpolate, $log, errorHandler, errorFormat) {
+.factory('recoverErrorStatusInterceptor', ['$q', '$injector', '$interpolate', '$log', 'errorHandler', 'errorFormat', function($q, $injector, $interpolate, $log) {
   return {
     responseError: function(response) {
       if (response.config.recoverErrorStatus) {
