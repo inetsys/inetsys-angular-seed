@@ -97,6 +97,43 @@ angular
 
 ## Usage
 
+### navbar
+
+```js
+angular.module('app')
+.config(function ($stateProvider, navbarLeftProvider) {
+
+  navbarLeftProvider.push(3 /*priority higher left-right */, {
+    name: "XXX",
+    state: 'xxx.yyy',
+    logged: true, // require a logged user to be displayed
+    'permissions': [ // user must have all permissions
+      '??'
+    ],
+    'permissionsAny': [ // user must have at least one permission
+      '??'
+    ],
+    roles: [ // user must have all roles
+      '??'
+    ],
+    rolesAny: [ // user must have at least one role
+      '??'
+    ]
+  });
+})
+// expose the navbar to the scope
+.run(function ($rootScope, navbarLeft) {
+  navbarLeft.sort();
+  $rootScope.tl_navbar = navbarLeft.tree;
+});
+```
+
+
+Markup
+```html
+<navbar-tree navbar-tree="tl_navbar"></navbar-tree>
+```
+
 ### angular.app("xx").dataSource
 
 DataSource it's a shortcut to keep select values sane.
