@@ -84,7 +84,20 @@ angular
     url: '/form',
     templateUrl: 'views/form.tpl.html',
     controller: 'FormCtrl'
-  });
+  })
+  .state('test.redirect', {
+    url: '/redirect',
+    templateUrl: 'views/redirect.tpl.html',
+    redirectTo: function() {
+      return 'test.redirect.here';
+    },
+    resolve: {}
+  })
+  .state('test.redirect.here', {
+    url: '/here',
+    templateUrl: 'views/redirect.here.tpl.html',
+    resolve: {}
+  })
 })
 .config(function(errorConfigProvider) {
   errorConfigProvider.templates.retryable = 'views/error-retryable.tpl.html';

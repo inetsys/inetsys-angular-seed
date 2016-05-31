@@ -13,17 +13,22 @@
 
 angular
 .module('app')
-.run(['$rootScope', '$state', '$injector', function($rootScope, $state, $injector) {
+.run(['$rootScope', '$state', '$injector', '$log', '$timeout', function($rootScope, $state, $injector, $log, $timeout) {
   $rootScope.$on('$stateChangeSuccess', function(evt, to, params) {
+    $log.debug('(redirectTo?)', to.redirectTo);
+
     if ('string' === typeof to.redirectTo) {
-      evt.preventDefault();
-      $state.go(to.redirectTo, params);
+      $timeout(function() {
+        $state.go(to.redirectTo, params);
+      });
     }
 
     if ('function' === typeof to.redirectTo || Array.isArray(to.redirectTo)) {
       var state = $injector.invoke(to.redirectTo);
       if (state) {
-        $state.go(state, params);
+        $timeout(function() {
+          $state.go(state, params);
+        });
       }
     }
   });
