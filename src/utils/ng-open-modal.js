@@ -2,7 +2,11 @@
 
 //
 // shortcut to open a modal
-// usage: ng-open-modal="/views/xxx.tpl.html" [size="lg"]
+// usage:
+//   ng-open-modal="'/views/xxx.tpl.html'"
+//   [before-open="<expression>"]
+//   [after-open="<expression>"]
+//   [size="lg"]
 //
 
 angular
@@ -12,6 +16,10 @@ angular
     restrict: 'A',
     link: function($scope, $elm, $attrs) {
       $elm.bind('click', function() {
+        if ($attrs.beforeOpen) {
+          $scope.$eval($attrs.beforeOpen);
+        }
+
         var html = $scope.$eval($attrs.ngOpenModal);
         var modalInstance = $uibModal.open({
           templateUrl: html,
@@ -20,6 +28,10 @@ angular
             $scope_modal.close = function() {
               modalInstance.close();
             };
+
+            if ($attrs.afterOpen) {
+              $scope.$eval($attrs.afterOpen);
+            }
           }]
         });
       });
