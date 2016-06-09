@@ -76,7 +76,8 @@ angular
       secure: $location.protocol() === 'https',
       domain: authConfig.cookie_domain
     });
-    $log.log('(Auth) get_token()?? ', get_token());
+
+    $log.debug('(Auth) get_token() ', get_token());
   }
 
   function has_role(roles, chk_fn) {

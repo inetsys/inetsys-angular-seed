@@ -14,8 +14,6 @@ angular
 
     // allow authentication on offline applications
     // if $rootScope.offline just passthrough
-    console.log($rootScope);
-    console.log('offline', $rootScope.offline);
     if ($rootScope.offline) {
       $log.debug('(AuthenticateRouteResolve) offline => passthrough');
       $timeout(function() {
@@ -23,7 +21,7 @@ angular
       });
     } else {
       Auth.isLoggedInAsync(function(loggedIn) {
-        $log.debug('(AuthenticateRouteResolve) user auth?', !!loggedIn);
+        $log.debug('(AuthenticateRouteResolve) user is logged in?', !!loggedIn);
         if (!loggedIn) {
           defer.reject();
           $timeout(function() {
@@ -35,11 +33,14 @@ angular
       });
     }
 
-
     return defer.promise;
   };
 })
-// Add resolve function if needed to state on $stateChangeStart
+// if state has 'authenticate:true', add authentication to resolve
+// if you need user data at resolve, pass the param: authenticate
+// resolve: {my_data: ['authenticate', 'Auth', function(authenticate, Auth) {
+//   Auth.getCurrentUser(); // contains user information :)
+// }]}
 .factory('AuthenticateRoute', function(Auth, $state, $log, $q, AuthenticateRouteResolve) {
   return function(event, toState/*, toParams, fromState, fromParams*/) {
     var require_auth = false;
@@ -57,7 +58,7 @@ angular
       }
       if (require_auth) {
         if (undefined === toState.resolve) {
-          $log.error('(AuthenticateRoute)', state, 'need a resolve: add resolve:{}');
+          $log.error('(AuthenticateRoute)', state, 'need at least and empty resolve object: "resolve:{}"');
           return;
         }
         s.resolve = s.resolve || {};

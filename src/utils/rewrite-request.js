@@ -33,7 +33,7 @@ angular
           config.url = url + config.url.substring(i.length);
         }
       }
-      //console.info(config);
+
       return config;
     }
   };

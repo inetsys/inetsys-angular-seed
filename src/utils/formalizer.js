@@ -27,6 +27,7 @@ angular
       'one-lower': 'Al menos una minúscula',
       'one-number': 'Al menos un número',
       'one-alpha': 'Al menos una letra',
+      'alphanumeric': 'Sólo letras y números',
       //'server-validation':
       'length': 'Debe tener exactamente {{element.attrs[\'ng-length\']}} caracteres',
       'decimals': 'Máximo número de decimales excedido: {{element.attrs[\'ng-decimals\']}}',

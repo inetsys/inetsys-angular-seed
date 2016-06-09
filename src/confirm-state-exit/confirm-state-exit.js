@@ -65,7 +65,7 @@ angular
     // if dirty, show a warning
     var cancel_dirty_leave = $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
       // avoid double open when $locationProvider.when is in use
-      $log.log('(confirmStateExit) opened', opened);
+      $log.debug('(confirmStateExit) opened', opened);
       if (opened) {
         cse.prevent(event, toState, toParams, fromState, fromParams);
         return;
@@ -73,7 +73,7 @@ angular
 
       var is_dirty = cse.is_dirty(event, toState, toParams, fromState, fromParams);
 
-      $log.log('(confirmStateExit) cse.confirmed', cse.confirmed);
+      $log.debug('(confirmStateExit) cse.confirmed', cse.confirmed);
 
       if (is_dirty && !cse.confirmed) {
         cse.prevent(event, toState, toParams, fromState, fromParams);

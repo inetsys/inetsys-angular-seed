@@ -18,7 +18,7 @@ angular
 
 tested with:
 * JQuery 2.1.4
-* angular 1.5.0
+* angular 1.5.6
 * angular-bootstrap 1.3.1
 * angular-ui-router 0.2.18
 * angular-cookies 4.0.10
