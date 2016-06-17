@@ -107,11 +107,21 @@ angular
   };
 })
 .run(['$templateCache', function($templateCache) {
+  var visibility_check = [
+    '(tree.visibilityOverride ? $eval(tree.visibilityOverride) : false)',
+    '(' + [
+      '(tree.logged ? $root.Auth.isLoggedIn() : true)',
+      '$root.Auth.hasPermissionsAny(tree.permissionsAny)',
+      '$root.Auth.hasPermissions(tree.permissions)',
+      '$root.Auth.hasRoles(tree.roles)'
+    ].join(' && ') + ')'
+  ].join(' || ');
+
   // TODO mouseover -> click if possible
   $templateCache.put('template/navbar-ul-tree.html',
   '<ul class="nav navbar-nav">\n' +
   '  <li ui-sref-active="active" uib-dropdown="" is-open="tree.isopen" ng-repeat="tree in navbarTree" ng-init="tree.isopen = false"\n' +
-  '  class="ng-hide" ng-show="(tree.logged ? $root.Auth.isLoggedIn() : true) && $root.Auth.hasPermissionsAny(tree.permissionsAny) && $root.Auth.hasPermissions(tree.permissions) && $root.Auth.hasRoles(tree.roles)">\n' +
+  '  class="ng-hide" ng-show="' + visibility_check + '">\n' +
   '    <a uib-dropdown-toggle="" ng-mouseover="tree.isopen = true" ui-sref=\"{{tree.state}}\" ng-click-if="!tree.subtree.length">\n' +
   '      <span ng-bind-html-and-compile="tree.name" translate></span>\n' +
   '      <b class="caret" class="ng-hide" ng-show="tree.subtree.length"></b>\n' +
@@ -127,7 +137,8 @@ angular
   '</ul>');
 
   $templateCache.put('template/navbar-li.html',
-  '<li ui-sref-active="active" class="ng-hide" ng-class="{divider: navbarLeaf.name == \'divider\'}" ng-show="(tree.logged ? $root.Auth.isLoggedIn() : true) && $root.Auth.hasPermissions(navbarLeaf.permissions) && $root.Auth.hasRoles(navbarLeaf.roles)">\n' +
+  '<li ui-sref-active="active" class="ng-hide" ng-class="{divider: navbarLeaf.name == \'divider\'}"' +
+  '  ng-show="' + visibility_check + '">\n' +
   '  <a class="ng-hide" ui-sref="{{navbarLeaf.state}}" ng-hide="navbarLeaf.name === \'divider\'">{{navbarLeaf.name}}</a>\n' +
   '</li>');
 
