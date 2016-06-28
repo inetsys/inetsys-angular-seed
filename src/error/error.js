@@ -200,7 +200,7 @@ angular
         error.list = [response.data.error];
       }
       if (response.data.type) {
-        error.type = response.data.type;
+        error = response.data;
       }
     }
 
