@@ -61,6 +61,7 @@ angular
           $log.error('(AuthenticateRoute)', state, 'need at least and empty resolve object: "resolve:{}"');
           return;
         }
+        s.authenticate = true;
         s.resolve = s.resolve || {};
         s.resolve.authenticate = AuthenticateRouteResolve;
       }
