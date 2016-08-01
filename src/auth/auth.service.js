@@ -67,6 +67,20 @@ angular
       domain: authConfig.cookie_domain
     });
   }
+
+  function Base64URLDecode(base64UrlEncodedValue) {
+    var res;
+    var newValue = base64UrlEncodedValue.replace('-', '+').replace('_', '/');
+
+    try {
+      res = decodeURIComponent(escape(window.atob(newValue)));
+    } catch (e) {
+      throw 'Base64URL decode of JWT segment failed';
+    }
+
+    return res;
+  }
+
   // remove token will remove the cookie in current domain
   // and all parent domains
   function remove_token() {
@@ -186,6 +200,10 @@ angular
       }));
     },
 
+    refreshSession: function() {
+      return login_me();
+    },
+
     /**
      * logout first, call logout API later
      * $emit $logout event to $rootScope after the api call
@@ -274,7 +292,17 @@ angular
     /**
      * Get auth token
      */
-    getToken: get_token
+    getToken: get_token,
+    getTokenExp: function() {
+      var tk = get_token();
+      if (!tk) {
+        return null;
+      }
+
+      tk = tk.split('.');
+      var payload = JSON.parse(Base64URLDecode(tk[1]));
+      return payload.exp * 1000;
+    }
   });
 })
 .factory('authInterceptor', function($injector, $q) {
