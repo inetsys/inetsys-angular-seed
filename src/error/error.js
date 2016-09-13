@@ -186,8 +186,13 @@ angular
 
     var error = {
       list: [],
-      type: null
+      type: null,
+      title: null
     };
+
+    if ('string' === typeof response.data.title) {
+      error.title = response.data.title
+    }
 
     if ('string' === typeof response.data) {
       error.list = [response.data];
