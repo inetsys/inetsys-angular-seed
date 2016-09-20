@@ -238,6 +238,7 @@ angular
     responseError: function(response) {
       if (response.config.recoverErrorStatus) {
         $log.debug('(recoverErrorStatusInterceptor) recover', response);
+        response.recoverFromStatus = response.status;
         response.status = response.config.recoverErrorStatus;
         return response;
       }
