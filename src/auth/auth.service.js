@@ -300,6 +300,11 @@ angular
       }
 
       tk = tk.split('.');
+      // If token does not have any expiration, return null
+      if(tk.length < 2){
+        return null;
+      }
+
       var payload = JSON.parse(Base64URLDecode(tk[1]));
       return payload.exp * 1000;
     }
