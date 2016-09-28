@@ -327,7 +327,7 @@ angular
       var authConfig = $injector.get('authConfig');
       var Auth = $injector.get('Auth');
 
-      if (response.headers(authConfig.expiration_header)) {
+      if (response.headers && response.headers(authConfig.expiration_header)) {
         Auth.logout();
       }
 

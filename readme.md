@@ -52,6 +52,8 @@ Do not think about use wiredep, because this will add your configuration before 
 
 Here is the list of common recommended files:
 
+**NOTE about order** loading interceptor must be the first one, so must be included last.
+
 ```json
 [
   "/src/auth/auth.service.js",
@@ -59,11 +61,11 @@ Here is the list of common recommended files:
   "/src/auth/login.controller.js",
   "/src/auth/redirection.service.js",
   "/src/auth/routes.js",
-  "/src/loading/loading.js",
   "/src/error/error.js",
   "/src/navbar/navbar.js",
   "/src/utils/rewrite-urls.js",
-  "/src/confirm-state-exit/confirm-state-exit.js"
+  "/src/confirm-state-exit/confirm-state-exit.js",
+  "/src/loading/loading.js",
 ]
 ```
 

@@ -218,7 +218,7 @@ angular
       $log.debug('(errorInterceptor) responseError::', response);
 
       // manage 4XX & 5XX
-      if (response.status >= 400 && !response.config.noModalError) {
+      if (response.status >= 400 && (response.config && !response.config.noModalError)) {
         var errors = errorFormat(response);
 
         // TODO handle retry
@@ -236,7 +236,7 @@ angular
 .factory('recoverErrorStatusInterceptor', ['$q', '$injector', '$interpolate', '$log', 'errorHandler', 'errorFormat', function($q, $injector, $interpolate, $log) {
   return {
     responseError: function(response) {
-      if (response.config.recoverErrorStatus) {
+      if (response.config && response.config.recoverErrorStatus) {
         $log.debug('(recoverErrorStatusInterceptor) recover', response);
         response.recoverFromStatus = response.status;
         response.status = response.config.recoverErrorStatus;

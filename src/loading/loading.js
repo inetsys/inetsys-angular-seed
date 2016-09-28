@@ -85,14 +85,18 @@ angular
         defer = chainLoadingQ();
       }
 
+      //$log.log('(httpLoadingInterceptor) request', requests, config.url);
+
       // Show loader
       $rootScope.$broadcast('$loading');
       return config;
     },
     response: function(response) {
-      if (response.config.noLoading) {
+      if (response.config && response.config.noLoading) {
         return response;
       }
+
+      //$log.log('(httpLoadingInterceptor) response', requests, response.config ? response.config.url : '?');
 
       if ((--requests) === 0) {
         // Hide loader
@@ -103,9 +107,11 @@ angular
       return response;
     },
     responseError: function(response) {
-      if (response.config.noLoading) {
+      if (response.config && response.config.noLoading) {
         return $q.reject(response);
       }
+
+      //$log.log('(httpLoadingInterceptor) responseError', requests, response.config ? response.config.url : '?');
 
       if ((--requests) === 0) {
         // Hide loader
