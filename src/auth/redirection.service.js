@@ -27,6 +27,8 @@ angular
     name: null,
     params: {}
   };
+  this.error = {
+  };
 
   this.$get = function() {
     return this;
@@ -46,7 +48,7 @@ angular
     });
   };
 })
-.run(function($rootScope, $state, $log, Auth, Redirection, redirectToLogin) {
+.run(function($rootScope, $state, $log, Auth, Redirection, redirectToLogin, lastError) {
   $rootScope.$on('$stateChangeStart', function(event, toState, toParams/*, fromState, fromParams*/) {
     if ('login' !== toState.name && 'error' !== toState.name) {
       Redirection.state.name = toState.name;
@@ -60,7 +62,20 @@ angular
     // go to error state to stop inifite loop
     // if has session is a error that won't redirect to login, so goto error
     if (Auth.isLoggedIn()) {
+      // default error state is 'error'
+      // overriden by Redirection.error by status code (global)
+      // overriden by redirectOnError (local)
+
       var target_state = 'error';
+      if (error && error.status) {
+        target_state = Redirection.error[error.status] || 'error';
+      }
+
+      if (!$state.get(target_state)) {
+        $log.error('(event:$stateChangeError) error state[', target_state, '] not defined');
+        target_state = 'error';
+      }
+
       if (error && error.redirectOnError) {
         target_state = error.redirectOnError;
       }

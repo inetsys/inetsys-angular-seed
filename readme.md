@@ -10,7 +10,7 @@ This is the minimum initialization needed:
 angular
 .module('app', [
   'ui.bootstrap', // modals, error handling, navbar, dirty form confirmations
-  'ui.router', // loading screens, session
+  'ui.router', // loading screens, session, error states
   'ngCookies', // session
   'cgBusy' // loading screens
 ])
@@ -18,7 +18,7 @@ angular
 
 tested with:
 * JQuery 2.1.4
-* angular 1.5.6
+* angular 1.5.8
 * angular-bootstrap 1.3.1
 * angular-ui-router 0.2.18
 * angular-cookies 4.0.10
@@ -47,39 +47,36 @@ tested with:
 
 bower.json@main only contains the css.
 
-You should manually add all Javascripts file after your app initialization
-Do not think about use wiredep, because this will add your configuration before your app initialization, and it will fail. Sorry: manually.
+You should manually add all Javascripts files after your app initialization
+Do not think about use `wiredep`, because this will add your configuration before your app initialization, and it will fail. Sorry: manually.
 
 Here is the list of common recommended files:
 
 **NOTE about order** loading interceptor must be the first one, so must be included last.
 
-```json
-[
-  "/src/auth/auth.service.js",
-  "/src/auth/authenticate-route.js",
-  "/src/auth/login.controller.js",
-  "/src/auth/redirection.service.js",
-  "/src/auth/routes.js",
-  "/src/error/error.js",
-  "/src/navbar/navbar.js",
-  "/src/utils/rewrite-urls.js",
-  "/src/confirm-state-exit/confirm-state-exit.js",
-  "/src/loading/loading.js",
-]
+```html
+<script src="/src/auth/auth.service.js"></script>
+<script src="/src/auth/authenticate-route.js"></script>
+<script src="/src/auth/login.controller.js"></script>
+<script src="/src/auth/redirection.service.js"></script>
+<script src="/src/auth/routes.js"></script>
+<script src="/src/error/error.js"></script>
+<script src="/src/utils/rewrite-urls.js"></script>
+<script src="/src/confirm-state-exit/confirm-state-exit.js"></script>
+<script src="/src/loading/loading.js"></script>
 ```
 
 Optionals
 
-```json
-[
-  "src/utils/raw-request.js",
-  "src/utils/formalizer.js"
-  "src/utils/ng-open-modal.js"
-  "src/utils/ui-router-redirect.js"
-  "src/utils/data-source.js"
-  "src/utils/ng-click-if.js"
-]
+```html
+<script src="/src/navbar/navbar.js"></script>
+<script src="/src/navbar/goto-first-element.js"></script>
+<script src="/src/utils/raw-request.js"></script>
+<script src="/src/utils/formalizer.js"></script>
+<script src="/src/utils/ng-open-modal.js"></script>
+<script src="/src/utils/ui-router-redirect.js"></script>
+<script src="/src/utils/data-source.js"></script>
+<script src="/src/utils/ng-click-if.js"></script>
 ```
 
 
@@ -147,13 +144,11 @@ setDataSource(angular.module('app'))
 .dataSource('name_of_the_value',[
   {"id": "xxx", "label": "yyy"} // always id-label!
 ], 'name_of_the_filter', "label of the default null value")
-.dataSource()
 .value() // get the idea can be chained, after setDataSource
-
 
 //
 // what it does ?
-//
+// 1st: create some $rootScope variables
 // source for create/update that cannot be null
 $rootScope.name_of_the_value = [
   {"id": "xxx", "label": "yyy"}
@@ -164,7 +159,7 @@ $rootScope.name_of_the_value_filters = [
   {"id": null, "label": "label of the default null value"},
   {"id": "xxx", "label": "yyy"}
 ];
-// for display a readable label
+// 2st: create a filter so you can use it to display data label
 .filter('name_of_the_filter', function() {
   function(id) {
     // 1. search id @ filters and return the label.
@@ -186,7 +181,7 @@ $http({
 })
 ```
 
-## do not display modal on error
+## $http: Do not display modal on error
 ```js
 $http({
   method: 'XXXX',
@@ -195,7 +190,7 @@ $http({
 })
 ```
 
-## Request never fail
+## $http: Request never fail!
 
 Some request may raise an error, if they are in state.resolve
 you will never reach the desired state. `recoverErrorStatus` force
@@ -209,10 +204,36 @@ $http({
 })
 ```
 
+## $http & $state: Redirection on state change error
 
+When a state change gives an error, it will redirect to 'error' by default.
 
+This behaviour can be changed globally using: Redirection
 
+```js
+.run(function(Redirection) {
+  Redirection.error['status-code'] = 'state';
+  Redirection.error['404'] = 'error404';
+})
+```
+
+Also locally per request.
+
+```js
+resolve: {
+  getData: ['$http', function() {
+    return $http({
+      //...
+      redirectOnError: 'another_error_state'
+    })
+  }]
+}
+```
 ### confirmStateExit
+
+Modal that user need to confirm before change state.
+
+Useful to force user to save or discard changes.
 
 ```js
 confirmStateExit($scope, 'condition-evaled-in-the-scope', ['template-url',
@@ -235,14 +256,12 @@ redirectTo support
 * string: destination state
 * Angular Injection Function Annotation
 
-
 Example of redirection based on permisions:
 
 ```js
 $stateProvider
 .state("installation.view", {
   '...': '...',
-  // TODO redirectTo must accept a function! to test permissions!
   redirectTo: ["Auth", function(Auth) {
     if (Auth.hasPermissions("xx")) {
       return "xx";
