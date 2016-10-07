@@ -48,7 +48,7 @@ angular
     });
   };
 })
-.run(function($rootScope, $state, $log, Auth, Redirection, redirectToLogin, lastError) {
+.run(function($rootScope, $state, $log, Auth, Redirection, redirectToLogin) {
   $rootScope.$on('$stateChangeStart', function(event, toState, toParams/*, fromState, fromParams*/) {
     if ('login' !== toState.name && 'error' !== toState.name) {
       Redirection.state.name = toState.name;
