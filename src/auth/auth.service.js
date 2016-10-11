@@ -301,7 +301,7 @@ angular
 
       tk = tk.split('.');
       // If token does not have any expiration, return null
-      if(tk.length < 2){
+      if (tk.length < 2) {
         return null;
       }
 

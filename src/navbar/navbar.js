@@ -112,9 +112,9 @@ angular
           Auth.hasRoles(tree.roles);
       };
 
-      if (angular.isArray(scope.navbarLeaf.subtree)) {
-        element.append('<navbar-sub-tree navbar-sub-tree=\"navbarLeaf.subtree\"></navbar-sub-tree>');
-        var parent = element.parent();
+      if (angular.isArray($scope.navbarLeaf.subtree)) {
+        $element.append('<navbar-sub-tree navbar-sub-tree=\"navbarLeaf.subtree\"></navbar-sub-tree>');
+        var parent = $element.parent();
         var classFound = false;
         while (parent.length > 0 && !classFound) {
           if (parent.hasClass('navbar-right')) {
@@ -124,12 +124,12 @@ angular
         }
 
         if (classFound) {
-          element.addClass('dropdown-submenu-right');
+          $element.addClass('dropdown-submenu-right');
         } else {
-          element.addClass('dropdown-submenu');
+          $element.addClass('dropdown-submenu');
         }
 
-        $compile(element.contents())(scope);
+        $compile($element.contents())($scope);
       }
     }
   };

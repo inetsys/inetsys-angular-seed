@@ -191,7 +191,7 @@ angular
     };
 
     if ('string' === typeof response.data.title) {
-      error.title = response.data.title
+      error.title = response.data.title;
     }
 
     if ('string' === typeof response.data) {

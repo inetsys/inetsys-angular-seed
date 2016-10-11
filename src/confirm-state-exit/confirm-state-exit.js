@@ -12,8 +12,13 @@ angular
   };
 })
 .factory('confirmStateExit', function($rootScope, $uibModal, $state, confirmStateExitConfig, $log) {
+  var counter = 0;
 
   return function confirm_state_exit($scope, cond_expr, tpl, open_cb) {
+    var _counter = ++counter;
+
+    $log.debug('(confirmStateExit ', _counter, ') init');
+
     tpl = tpl || confirmStateExitConfig.template;
 
     var opened = false;
@@ -22,7 +27,7 @@ angular
       confirmed: false,
       is_dirty: function(event, toState, toParams, fromState, fromParams) {
         if ('function' === typeof cond_expr) {
-          $log.debug('(confirmStateExit) cond_expr()');
+          $log.debug('(confirmStateExit ', _counter, ') cond_expr()');
           return cond_expr(cse, event, toState, toParams, fromState, fromParams);
         }
 
@@ -65,7 +70,7 @@ angular
     // if dirty, show a warning
     var cancel_dirty_leave = $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
       // avoid double open when $locationProvider.when is in use
-      $log.debug('(confirmStateExit) opened', opened);
+      $log.debug('(confirmStateExit ', _counter, ') opened', opened);
       if (opened) {
         cse.prevent(event, toState, toParams, fromState, fromParams);
         return;
@@ -73,7 +78,7 @@ angular
 
       var is_dirty = cse.is_dirty(event, toState, toParams, fromState, fromParams);
 
-      $log.debug('(confirmStateExit) cse.confirmed', cse.confirmed);
+      $log.debug('(confirmStateExit ', _counter, ') is_dirty?', is_dirty, ' cse.confirmed?', cse.confirmed);
 
       if (is_dirty && !cse.confirmed) {
         cse.prevent(event, toState, toParams, fromState, fromParams);
@@ -81,15 +86,11 @@ angular
           cse.go(toState, toParams);
         });
       }
-
-      // reset after leave, so we can show it again if necessary
-      if (cse.confirmed) {
-        cse.confirmed = false;
-      }
     });
 
     $scope.$on('$destroy', function() {
       cancel_dirty_leave();
+      $log.debug('(confirmStateExit ', _counter, ') removed');
     });
 
     return cse;
