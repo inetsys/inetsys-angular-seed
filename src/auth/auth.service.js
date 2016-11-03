@@ -307,6 +307,13 @@ angular
 
       var payload = JSON.parse(Base64URLDecode(tk[1]));
       return payload.exp * 1000;
+    },
+    /**
+     * Manually set session token
+     */
+    setToken: function(token) {
+      set_token(token);
+      return login_me();
     }
   });
 })
