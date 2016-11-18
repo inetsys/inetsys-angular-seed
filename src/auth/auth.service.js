@@ -21,6 +21,7 @@ angular
   this.api_users_logout_method = 'POST';
   this.api_users_logout = '/api/logout';
 
+  this.no_token_header = [];
   this.token_header = 'X-Access-Token';
   this.token_prefix = 'Bearer ';
   this.cookie_name = 'token';
@@ -317,15 +318,22 @@ angular
     }
   });
 })
-.factory('authInterceptor', function($injector, $q) {
+.factory('authInterceptor', function($injector, $q, $log) {
   return {
     // Add authorization token to headers
     request: function(config) {
       var authConfig = $injector.get('authConfig');
       var Auth = $injector.get('Auth');
       config.headers = config.headers || {};
+
       var t = Auth.getToken();
-      if (t) {
+      var domain_blacklisted = authConfig.no_token_header.some(function(domain) {
+        return config.url.indexOf(domain) !== -1;
+      });
+
+      $log.debug('(authInterceptor)', config.url, domain_blacklisted, authConfig.no_token_header);
+
+      if (t && !domain_blacklisted) {
         config.headers[authConfig.token_header] = authConfig.token_prefix + t;
       }
       return config;

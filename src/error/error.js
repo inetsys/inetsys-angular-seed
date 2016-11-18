@@ -20,6 +20,7 @@ angular
   var instance;
 
   function pop_error(reject) {
+    $log.debug('(errorHandler) pop_error - error_list', error_list);
     var err_data = error_list[0];
     error_list.splice(0, 1);
 
@@ -131,6 +132,7 @@ angular
         };
 
         $scope.close = function() {
+          $log.debug('(errorHandler) close');
           pop_error(true);
 
           instance = null;
@@ -138,6 +140,7 @@ angular
         };
 
         $scope.ok = function() {
+          $log.debug('(errorHandler) ok');
           pop_error(true);
 
           instance = null;
