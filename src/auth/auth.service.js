@@ -187,6 +187,13 @@ angular
 
         set_token(response.data.token);
 
+        //Mixpanel user info
+        if ( typeof mixpanel !== 'undefined' && typeof response.data.portal_id !== 'undefined'){
+          mixpanel.identify(response.data.portal_id.toString());
+          mixpanel.track("Login");
+          $log.debug('(Auth) mixpanel sent ok', response.data.portal_id);
+        }
+
         return login_me().then(function() {
           return response;
         });
