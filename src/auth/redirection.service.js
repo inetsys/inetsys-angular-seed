@@ -57,6 +57,10 @@ angular
   });
 
   $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error) {
+    if(event.defaultPrevented){
+      return;
+    }
+
     $log.error('(event:$stateChangeError)', arguments);
 
     // go to error state to stop inifite loop
